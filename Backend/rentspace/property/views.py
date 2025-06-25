@@ -7,11 +7,12 @@ from .serializers import ListingSerializer, ListingDetailSerializer
 from django.shortcuts import get_object_or_404
 from django.shortcuts import get_object_or_404
 from .models import ListingImage, Inquiry, Payment, Review
+from django.contrib.auth import get_user_model
 from .serializers import (
     ListingImageSerializer, InquirySerializer,
     PaymentSerializer, ReviewSerializer
 )
-
+User = get_user_model()
 
 ####Begin proprty Listing###
 class ListingListCreateAPIView(APIView):
