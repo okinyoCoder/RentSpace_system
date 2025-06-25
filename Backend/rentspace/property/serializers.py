@@ -1,12 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import ListingImage, Inquiry, Payment,Review
+from .models import Listing, ListingImage, Inquiry, Payment, Review
 from account.serializers import UserSerializer
 
-
 User = get_user_model()
-
-from .models import Listing
 
 class ListingSerializer(serializers.ModelSerializer):
     landlord = UserSerializer(read_only=True)
@@ -17,17 +14,22 @@ class ListingSerializer(serializers.ModelSerializer):
         model = Listing
         fields = [
             'id', 'landlord', 'title', 'description',
-            'price', 'location', 'property_type',
-            'is_verified', 'avg_rating', 'review_count',
-            'created_at'
+            'price', 'latitude', 'longitude',
+            'property_type', 'is_verified', 'is_occupied',
+            'avg_rating', 'review_count', 'created_at'
         ]
-        read_only_fields = ['id', 'is_verified', 'avg_rating', 'review_count', 'created_at']
+        read_only_fields = [
+            'id', 'is_verified', 'avg_rating', 'review_count',
+            'is_occupied', 'created_at'
+        ]
+
 
 class ListingImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ListingImage
-        fields = ['id', 'listing', 'image', 'uploaded_at']
-        read_only_fields = ['id', 'uploaded_at']        
+        fields = ['id', 'listing', 'property_image', 'uploaded_at']
+        read_only_fields = ['id', 'uploaded_at']
+
 
 class InquirySerializer(serializers.ModelSerializer):
     tenant = UserSerializer(read_only=True)
