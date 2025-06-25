@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from serializers import UserSerializer
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, logout
 from django.contrib.auth import get_user_model
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -34,4 +34,11 @@ class LoginView(APIView):
         user = authenticate(request, username=email, password=password)
         if user:
             return Response({"message":"Login successful."})
-        return Response({"error": "invalid email or password"},  status=status.HTTP_401_UNAUTHORIZED)     
+        return Response({"error": "invalid email or password"},  status=status.HTTP_401_UNAUTHORIZED)
+    
+class LogoutView(APIView):
+    """system logout view"""
+    def post(self, request):
+        logout(request)
+        return Response({"message": "Logged out successfully."}, status=status.HTTP_200_OK)     
+        
