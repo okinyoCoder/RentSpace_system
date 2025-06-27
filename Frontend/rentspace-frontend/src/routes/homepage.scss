@@ -4,5 +4,12 @@
     }
     .imgcontent{
         flex: 2;
+        background-color: #fdeecf;
+
+        img {
+            width:60px;
+            height: 100px;
+        }
+
     }
 }
