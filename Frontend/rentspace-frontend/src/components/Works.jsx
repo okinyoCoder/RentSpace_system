@@ -1,9 +1,9 @@
-import './works.scss'
+import '../components/works.scss'
 
 function Works() {
     return(
-        <div className="workcontent">
-            <div className="textcont">
+        <div className="workboxes">
+            <div className="wrapper act">
                 <h2>
                     How it works?
                 </h2>
@@ -14,28 +14,34 @@ function Works() {
                     able to choose from a pool of real estate
                 </p>
             </div>
-            <div className="textcont dist">
+            <div className="textbox dist">
                 <div className="colum">
                     <img src="" alt="" />
-                    <h3>Search Property</h3>
-                    <p></p>
+                    <h4>Search Property</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
+                        Illo nulla doloribus quidem itaque earum non incidunt eos, iure ipsam?
+                        Saepe, nisi. Cum amet veritatis maxime.</p>
+                    <a href="">Know More</a>
+                </div>
+                <div className="colum columblue">
+                    <img src="" alt="" />
+                    <h4>Choose Property</h4>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                        Esse ducimus pariatur alias accusamus minima, maiores repellendus vero provident.
+                        Nisi suscipit illum vitae exercitationem unde cupiditate!</p>
                     <a href="">Know More</a>
                 </div>
                 <div className="colum">
                     <img src="" alt="" />
-                    <h3>Choose Property</h3>
-                    <p></p>
-                    <a href="">Know More</a>
-                </div>
-                <div className="colum">
-                    <img src="" alt="" />
-                    <h3>Rent Property</h3>
-                    <p></p>
+                    <h4>Rent Property</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
+                       Odio repellat fugit nulla sint possimus quibusdam et voluptates doloribus? 
+                       Quasi quaerat ipsum, ea consectetur expedita eveniet?</p>
                     <a href="">Know More</a>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default Works

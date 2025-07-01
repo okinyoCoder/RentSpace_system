@@ -3,6 +3,7 @@ import "./navbar.scss"
 
 function Navbar(){
     const [open, setOpen] = useState(false)
+    const user = false;
     return (
         <nav>
             <div className="left">
@@ -14,9 +15,22 @@ function Navbar(){
                 <a href="">about</a>
                 <a href="">listing</a>
             </div>
-            <div className="right">           
-                <a href="">sign in</a>
-                <a href="" className="register">sign up</a>
+            <div className="right">
+                {user ?(
+                     <div className="user">
+                        <img src="" alt="" />
+                        <span>user.name</span>
+                        <Link to="/profile" className="profile">
+                            <div className="notification"></div>
+                            <span>Profile</span>
+                        </Link>
+                     </div>
+                ) : (
+                    <>
+                        <a href="">sign in</a>
+                        <a href="" className="register">sign up</a>
+                    </>
+                )}
                 <div className="menuicon">
                    <img src="./src/assets/menu.png" alt="" onClick={()=> setOpen(!open)}/>
                 </div>
@@ -29,7 +43,7 @@ function Navbar(){
                 </div>
             </div>
         </nav>
-    )
+    );
 }
 
 export default Navbar;

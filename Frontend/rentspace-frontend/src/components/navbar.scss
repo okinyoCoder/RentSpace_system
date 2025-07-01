@@ -1,4 +1,4 @@
-@import "../responsive.scss";
+@import "../../src/responsive.scss";
 
 nav {
     display: flex;
@@ -44,7 +44,7 @@ nav {
     }
     .right{
         flex: 2;
-        background-color: #fdeecf;
+        //background-color: #fdeecf;
         display: flex;
         justify-content: flex-end;
         align-items: center;
@@ -54,8 +54,44 @@ nav {
             border-radius: 24px;
             padding: 5px 12px;
         }
+
+        .user {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+
+            img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-right: 20px;
+            }
+            .profile {
+                padding: 12px 24px;
+                background-color: #DE7438;
+                color: white;
+                cursor: pointer;
+                border: none;
+                position: relative;
+
+                .notification {
+                    position: absolute;
+                    background-color: red;
+                    color: white;
+                    border-radius: 50%;
+                    width: 26px;
+                    height: 26px;
+                    display: flex;
+                    align-items: center;
+                    top: -8px;
+                    right: -8px;
+                }
+            }
+        }
         .register{
             background-color: #DE7438;
+            color: white;
         }
 
         .menuicon {

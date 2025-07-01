@@ -1,12 +1,13 @@
-@import "./responsive.scss";
+@import "../responsive.scss";
 
 .layout{
-    background-color: #f2f2f2;
     height: 100vh;
     max-width: 1366px;
     margin-right: auto;
     margin-left: auto;
     padding-inline: 20px;
+    display: flex;
+    flex-direction: column;
 
     @include large{
         max-width: 1280px;
@@ -22,7 +23,6 @@
     }
 
     .content {
-        background-color: #f2f2f2;
         height: calc(100vh - 100px);
     }
 }

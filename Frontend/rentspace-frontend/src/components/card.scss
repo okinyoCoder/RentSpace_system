@@ -1,0 +1,41 @@
+.card {
+    display: flexbox;
+    gap: 20px;
+
+    .imageContainer {
+        flex: 2;
+        height: 200px;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+    }
+    .textcontainer {
+        font-size: 20px;
+        font-weight: 600;
+        color: #444;
+        transition: all 0.4s ease;
+
+        &:hover {
+            color: black;
+            scale: 1.01;
+        }
+        .location {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #888;
+        }
+        .price {
+            font-size: 20px;
+            font-family: 300;
+            background-color: #092d3c;
+            width: max-content;
+        }
+    }
+ 
+}

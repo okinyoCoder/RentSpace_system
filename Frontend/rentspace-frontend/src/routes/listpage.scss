@@ -1,0 +1,14 @@
+.listpage {
+    display: flex;
+    height: 100%;
+    width: 100%;
+
+    .listContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+        overflow-y: scroll;
+        height: 100%;
+        padding-bottom: 50px;
+    }
+}
