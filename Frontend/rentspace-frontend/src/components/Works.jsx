@@ -3,7 +3,7 @@ import '../components/works.scss'
 function Works() {
     return(
         <div className="workboxes">
-            <div className="wrapper act">
+            <div className="top act">
                 <h2>
                     How it works?
                 </h2>
@@ -14,9 +14,9 @@ function Works() {
                     able to choose from a pool of real estate
                 </p>
             </div>
-            <div className="textbox dist">
+            <div className="bottom dist">
                 <div className="colum">
-                    <img src="" alt="" />
+                    <img src="/src/assets/searchPro.png" alt="" />
                     <h4>Search Property</h4>
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
                         Illo nulla doloribus quidem itaque earum non incidunt eos, iure ipsam?
@@ -24,7 +24,7 @@ function Works() {
                     <a href="">Know More</a>
                 </div>
                 <div className="colum columblue">
-                    <img src="" alt="" />
+                    <img src="/src/assets/tenant.png" alt="" />
                     <h4>Choose Property</h4>
                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. 
                         Esse ducimus pariatur alias accusamus minima, maiores repellendus vero provident.
@@ -32,7 +32,7 @@ function Works() {
                     <a href="">Know More</a>
                 </div>
                 <div className="colum">
-                    <img src="" alt="" />
+                    <img src="/src/assets/landlord.png" alt="" />
                     <h4>Rent Property</h4>
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
                        Odio repellat fugit nulla sint possimus quibusdam et voluptates doloribus? 

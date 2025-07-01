@@ -5,6 +5,8 @@
 
     .textContent{
         flex:3;
+        background-color: #f4f8f9;
+        margin-bottom: 50px;
 
         p {
             font-size: 12px;
@@ -14,14 +16,17 @@
             padding-right: 100px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             text-align: center;
-            gap: 4px;
+            gap: 10px;
 
             .title {
                 text-align: left;
                 font-weight: 700;
                 font-size: 44px;
+            }
+            p {
+                line-height: 1rem;
+                font-size: 12px;
             }
 
         }
@@ -29,27 +34,35 @@
             text-align: center;
             display: flex;
             justify-content: center;
-            margin-top: 10px;
-
-            img {
-                height: 34px;
-                width: 34px;
-            }
+            gap: 10px;
 
             .box {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 2px;
-                width: 22%;
+                gap: 10px;
+                width: 26%;
+                margin-bottom: 20px;
+
                 .img {
                     margin: 0;
+                    height: 44px;
+                    width: 44px;
                 }
                 .detail {
-                    padding: 10px;
+                    padding: 12px;
                     display: flex;
                     flex-direction: column;
                     align-content: center;
+                    gap: 10px;
+
+                    h4 {
+                        font-size: 18px;
+                    }
+                    p {
+                        line-height: 1rem;
+                        font-size: 12px  
+                    }
                 }
 
                 a {
@@ -78,7 +91,7 @@
     }
     .imgContent {
         flex: 2;
-        background-color: #fdeecf;
+        background-color: #f8f7d9;
         position: relative;
         display: flex;
         align-items: center;

@@ -21,6 +21,7 @@ nav {
         display: flex;
         align-items: center;
         gap: 50px;
+        background-color: #f4f8f9;
 
         .logo {
             font-weight: bold;
@@ -44,7 +45,7 @@ nav {
     }
     .right{
         flex: 2;
-        //background-color: #fdeecf;
+        background-color: #f8f7d9;
         display: flex;
         justify-content: flex-end;
         align-items: center;
@@ -67,6 +68,12 @@ nav {
                 object-fit: cover;
                 margin-right: 20px;
             }
+            span {
+                @include small {
+                    display: none;
+                }
+            }
+    
             .profile {
                 padding: 12px 24px;
                 background-color: #DE7438;

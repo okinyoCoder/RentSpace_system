@@ -40,7 +40,7 @@ function Homepage() {
                 <Works />
             </div>
             <div className="imgContent">
-                <img src="/src/assets/flat..png" alt="" />
+                <img src="/src/assets/RentSpaceimg.png" alt="" />
             </div>
         </div>
     );
