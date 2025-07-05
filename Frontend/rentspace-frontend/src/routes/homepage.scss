@@ -2,31 +2,26 @@
     display: flex;
     height: 100vh;
     margin-top: 0;
-
     .textContent{
         flex:3;
         background-color: #f4f8f9;
-        margin-bottom: 50px;
-
-        p {
-            font-size: 12px;
-        }
         
         .wrapper {
-            padding-right: 100px;
+            padding-right: 80px;
             display: flex;
             flex-direction: column;
-            text-align: center;
+            align-items: center;
             gap: 10px;
 
             .title {
                 text-align: left;
-                font-weight: 700;
-                font-size: 44px;
+                font-weight: 720;
+                font-size: 46px;
             }
             p {
                 line-height: 1rem;
                 font-size: 12px;
+                width: 88%;
             }
 
         }
