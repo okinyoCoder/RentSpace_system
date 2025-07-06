@@ -4,8 +4,8 @@ import {
     FaHouse, 
     FaHouzz, 
     FaPeopleRoof,
-    FaCircleUser ,
- } from "react-icons/fa6";
+    FaCircleUser 
+} from "react-icons/fa6";
 
 function SideBar() {
     return (
