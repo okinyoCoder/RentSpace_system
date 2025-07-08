@@ -5,6 +5,23 @@ import uuid
 User = get_user_model()
 
 
+class Location(models.Model):
+    county = models.CharField(max_length=100)
+    sub_county = models.CharField(max_length=100)
+    ward = models.CharField(max_length=100)
+    street_address = models.CharField(max_length=255, blank=True, null=True)
+    postal_code = models.CharField(max_length=20, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('county', 'sub_county', 'ward', 'street_address')
+
+    def __str__(self):
+        return f"{self.ward}, {self.sub_county}, {self.county}"
+
+
 class Listing(models.Model):
     PROPERTY_CHOICES = (
         ('bedsitter', 'Bedsitter'),
@@ -12,27 +29,43 @@ class Listing(models.Model):
         ('2br', '2 Bedroom'),
         ('studio', 'Studio'),
         ('mansion', 'Mansion'),
+        ('single', 'Single'),
+        ('double_room', 'Double Room'),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     landlord = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listings')
     title = models.CharField(max_length=254)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     property_type = models.CharField(max_length=20, choices=PROPERTY_CHOICES, default='bedsitter')
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True, related_name='listings')
     is_verified = models.BooleanField(default=False)
-    is_occupied = models.BooleanField(default=False)
+    is_vacant = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     avg_rating = models.FloatField(default=0.0)
     review_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title
-    
+
+
+class Unit(models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='units')
+    unit_number = models.CharField(max_length=50)
+    floor = models.IntegerField(default=1)
+    bedrooms = models.IntegerField(default=1)
+    bathrooms = models.IntegerField(default=1)
+    rent = models.DecimalField(max_digits=10, decimal_places=2)
+    is_occupied = models.BooleanField(default=False)
+    tenant = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='occupied_units')
+
+    def __str__(self):
+        return f"{self.listing.title} - Unit {self.unit_number}"
+
+
 def listing_image_upload_path(instance, filename):
     return f'property_image/{instance.listing.id}/{filename}'
+
 
 class ListingImage(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='images')

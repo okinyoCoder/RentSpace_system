@@ -1,27 +1,71 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Listing, ListingImage, Inquiry, Payment, Review
+from .models import (
+    Listing, ListingImage, Inquiry, Payment,
+    Review, Location, Unit
+)
 from account.serializers import UserSerializer
 
 User = get_user_model()
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = [
+            'id', 'county', 'sub_county', 'ward',
+            'street_address', 'postal_code',
+            'latitude', 'longitude', 'description', 'created_at'
+        ]
+        read_only_fields = ['id', 'created_at']
+
+
+class UnitSerializer(serializers.ModelSerializer):
+    tenant = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Unit
+        fields = [
+            'id', 'listing', 'unit_number', 'floor',
+            'bedrooms', 'bathrooms', 'rent', 'is_occupied', 'tenant'
+        ]
+        read_only_fields = ['id', 'tenant']
+
 
 class ListingSerializer(serializers.ModelSerializer):
     landlord = UserSerializer(read_only=True)
     avg_rating = serializers.FloatField(read_only=True)
     review_count = serializers.IntegerField(read_only=True)
+    location = LocationSerializer()
 
     class Meta:
         model = Listing
         fields = [
             'id', 'landlord', 'title', 'description',
-            'price', 'latitude', 'longitude',
-            'property_type', 'is_verified', 'is_occupied',
-            'avg_rating', 'review_count', 'created_at'
+            'price', 'property_type', 'location',
+            'is_verified', 'is_vacant', 'avg_rating',
+            'review_count', 'created_at'
         ]
         read_only_fields = [
-            'id', 'is_verified', 'avg_rating', 'review_count',
-            'is_occupied', 'created_at'
+            'id', 'is_verified', 'avg_rating',
+            'review_count', 'created_at'
         ]
+
+    def create(self, validated_data):
+        location_data = validated_data.pop('location', None)
+        if location_data:
+            location, _ = Location.objects.get_or_create(**location_data)
+            validated_data['location'] = location
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        location_data = validated_data.pop('location', None)
+        if location_data:
+            Location.objects.update_or_create(
+                id=instance.location.id if instance.location else None,
+                defaults=location_data
+            )
+        return super().update(instance, validated_data)
 
 
 class ListingImageSerializer(serializers.ModelSerializer):
@@ -68,6 +112,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 class ListingDetailSerializer(ListingSerializer):
     images = ListingImageSerializer(many=True, read_only=True)
     reviews = ReviewSerializer(many=True, read_only=True)
+    units = UnitSerializer(many=True, read_only=True)
 
     class Meta(ListingSerializer.Meta):
-        fields = ListingSerializer.Meta.fields + ['images', 'reviews']
+        fields = ListingSerializer.Meta.fields + ['images', 'reviews', 'units']
