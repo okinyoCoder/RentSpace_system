@@ -163,7 +163,10 @@ class PaymentListCreateAPIView(APIView):
             listing = validated.get('listing')
             
             if not listing:
-                return Response({'listing': 'This field is required.'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {'listing': 'This field is required.'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
 
             serializer.save(
                 tenant=request.user,

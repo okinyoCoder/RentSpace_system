@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import (
-    Listing, ListingImage, Inquiry, Payment,
-    Review, Location, Unit
+    Listing, ListingImage, Inquiry, Payment, Review,
+    Location, Unit
 )
 from account.serializers import UserSerializer
 
