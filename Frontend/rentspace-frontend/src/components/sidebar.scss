@@ -1,186 +1,109 @@
-.sidebar{
-    background-color: #8888;
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding: 2rem 3rem;
-    width: 15rem;
-    height: 100vh;
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #1e293b;
+  color: #fff;
+  padding: 1rem;
+  box-sizing: border-box;
 
-    .logoContainer {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
 
-        .title {
-            font-size: 3rem;
+    img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .title {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  }
+
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+
+    img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+    }
+
+    .info {
+      .name {
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .email {
+        font-size: 0.75rem;
+        color: #cbd5e1;
+      }
+    }
+  }
+
+  .nav {
+    flex-grow: 0.8;
+
+    ul {
+      list-style: none;
+      padding: 0;
+
+      li {
+        margin-bottom: 0.5rem;
+
+        a {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.6rem;
+          text-decoration: none;
+          color: #cbd5e1;
+          border-radius: 6px;
+
+          &.active {
+            background-color: #0ea5e9;
             color: #fff;
-            padding-left: 1rem;
-        }
+          }
 
-    }
-    .burgerContainer{
-        content: "";
-        position: absolute;
-        right: calc(-35px/2);
-        width: 35px;
-        height: 35px;
-        border-radius: 2rem;
-        z-index: 1 ;
+          &:hover {
+            background-color: #334155;
+          }
 
-        .burgerTrogger{
-            height: 35px;
-            width: 35px;
-            content: "";
-            cursor: pointer;
-            z-index: 2;
-            opacity: 0;
-            background-color: red;
+          .icon {
+            font-size: 1.1rem;
+          }
         }
-        .burgerMenu{
-            height: 20px;
-            width: 3px;
-            content: "";
-            cursor: pointer;
-            z-index: 1;
-            opacity: 0;
-            background-color: #fff;
-            bottom: calc(35/2);
-            left: 0.45rem; 
-        }
-        .burgerMenu::after {
-            content: "";
-            background-color: #fff;
-            position: absolute;
-            width: 20px;
-            height: 3px;
-            background-repeat: 2rem;
-            top: 0.4rem;
-            transform: translateY(0.4rem) rotate(-45deg);
-        }
-        .burgerMenu::before {
-            content: "";
-            background-color: #fff;
-            position: absolute;
-            width: 20px;
-            height: 3px;
-            background-repeat: 2rem;
-            top: -0.4rem;
-        }
+      }
     }
-    .burgerContainer::after{
-        content: '';
-        position: absolute;
-        right: 35px;
-        top: calc(35px / 2);
-        z-index: 0;
-        width: calc(6rem + 15rem);
-        background-color: #876487;
-    }
-    .profileContainer {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 3rem 0 0 0;
+  }
 
-        img {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-        }
-        .profileContent {
-            padding-left: 1rem;
+  .logout {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem;
+    background: none;
+    border: none;
+    color: #f87171;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.2s;
 
-            .name{
-                padding: 0;
-                margin: 0;
-                font-size: 16px;
-                color: #fff;
-                text-transform: capitalize;
-                font-weight: 800;
-            }
-            p {
-                padding: 0;
-                margin: 0;
-                font-size: 13px;
-                color: #fff;
-                text-transform: lowercase;
-            }
-        }
+    .icon {
+      font-size: 1.1rem;
     }
-    .navContainer {
-        margin: 2rem 0 0 0;
 
-        ul {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            flex-direction: column;
-            padding: 0;
-            margin: 0;
-            list-style: none;
-
-            li {
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-                flex-direction: row;
-                margin: 0.75rem 0;
-                padding: 0.7rem 0;
-                width: 100%;
-                border-radius: 1rem;
-
-                .icon {
-                    padding: 0 1rem 0 0.5rem;
-                }
-                Link {
-                    color: #fff;
-                    font-size: 20px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    margin: 0 0 0 0.5rem;
-                    cursor: pointer;
-                }
-            }
-            li.active {
-                background-color: #64a4b4;
-            }
-            li:hover {
-                background-color: #b17e7e;
-                transition: 0.25s all;
-            }
-        }
+    &:hover {
+      background-color: rgba(248, 113, 113, 0.1);
     }
-}
-.sidebar.active {
-    width: 3rem;
-
-    .logoContainer.active {
-        h2.title {
-            opacity: 0;
-        }
-    }
-    .burgerContainer.active {
-        .burgerMenu {
-            background-color: #fff;
-        }
-    }
-    .burgerMenu::before {
-        transform: translateY(0rem) rotate(0deg);
-    }
-    .burgerMenu::after {
-        transform: translateY(0rem) rotate(0deg);
-    }
-    .profileContainer {
-        .profileContent{
-            opacity: 0;
-        }
-    }
-    .navContainer {
-        Link {
-            opacity: 0;
-        }
-
-    }
+  }
 }

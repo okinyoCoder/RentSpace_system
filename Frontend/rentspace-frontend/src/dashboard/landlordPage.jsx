@@ -1,15 +1,16 @@
-import MainContent from "../components/MainContent";
-import SideBar from "../components/SiderBar";
-import "./landlordpage.scss"
-import { Outlet} from 'react-router-dom';
+import SideBar from "../components/SideBar";
+import "./landlordpage.scss";
+import { Outlet } from "react-router-dom";
 
 function LandlordPage() {
     return (
-        <div className="landlord">
+        <div className="landlordLayout">
             <SideBar />
-            <Outlet />
+            <main className="mainContent">
+                <Outlet />
+            </main>
         </div>
     );
 }
 
-export default LandlordPage
+export default LandlordPage;

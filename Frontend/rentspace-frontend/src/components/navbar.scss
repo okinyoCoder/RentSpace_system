@@ -1,11 +1,12 @@
 @import "../../src/responsive.scss";
 
-nav {
+.navTop {
     display: flex;
     justify-content: space-between;
-    height: 100px;
+    height: 70px;
     align-items: center;
-    a {
+
+    .a {
         transition: all 0.4s ease;
 
         @include small {
@@ -28,7 +29,7 @@ nav {
             font-size: 20px;
             display: flex;
             align-items: center;
-            gap: 10px
+            gap: 10px;
 
             img {
                 width: 28px;
@@ -51,7 +52,7 @@ nav {
         align-items: center;
         height: 100vh;
 
-        a {
+        .a {
             border-radius: 24px;
             padding: 5px 12px;
             margin-right: 20px;
@@ -135,7 +136,7 @@ nav {
                 right: 0;
             }
             @include small {
-                a {
+                .a {
                     display: initial;
                 }
             }

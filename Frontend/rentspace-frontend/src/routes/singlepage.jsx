@@ -1,110 +1,144 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Slider from "../components/Slider";
-import "./singlepage.scss"
+import {
+  FaMapMarkerAlt,
+  FaMoneyBillWave,
+  FaTrash,
+  FaTint,
+  FaBolt,
+  FaArrowsAltH,
+  FaBath,
+  FaBed,
+  FaMap,
+  FaUserCircle,
+} from "react-icons/fa";
+import "./singlepage.scss";
 
 function SinglePage() {
-    return (
-        <div className="singlePage">
-            <div className="detail">
-                <div className="wrapper">
-                    <Slider images=""/>
-                    <div className="info">
-                        <div className="top">
-                            <div className="post">
-                                <h1>Apple Apartments</h1>
-                                <div className="address">
-                                    <img src="/pin.png" alt="" />
-                                    <span>kiganjo,thika, kiambu</span>
-                                </div>
-                                <div className="price">
-                                    ksh 200
-                                </div>
-                            </div>
-                            <div className="user">
-                                <img src="" alt="" />
-                                <span>user.name</span>
-                            </div>
-                        </div>
-                        <div className="bottom">
-                            Lorem ipsum dolor sit amet, consectetur 
-                            adipisicing elit. Aperiam eligendi amet nihil? 
-                            Maiores porro perspiciatis esse, optio at 
-                            reprehenderit recusandae vitae ratione doloremque 
-                            nemo obcaecati, praesentium qui. Qui enim fugit
-                            voluptas. Maxime repellat porro nulla modi?
-                             Soluta cumque enim maxime animi velit iure dicta 
-                             voluptatibus beatae voluptatum suscipit ratione, 
-                             accusantium autem repellendus, nostrum eaque magni 
-                             optio! Est perspiciatis ullam sequi perferendis 
-                             cum eum, ad necessitatibus officia obcaecati modi 
-                             dicta suscipit, voluptates nulla temporibus 
-                             aperiam? Inventore assumenda aliquid vero ipsa? Ipsam earum, 
-                             neque fugit, rem excepturi repellendus libero consequuntur, 
-                             voluptates non deserunt veritatis! Voluptas modi architecto 
-                             impedit itaque temporibus similique officia?
-                        </div>
-                    </div>
+  const { id } = useParams();
+  const [listing, setListing] = useState(null);
+
+  useEffect(() => {
+    const fetchListing = async () => {
+      try {
+        const res = await fetch(`/api/listings/${id}`);
+        const data = await res.json();
+        setListing(data);
+      } catch (error) {
+        console.error("Error fetching listing:", error);
+      }
+    };
+
+    fetchListing();
+  }, [id]);
+
+  if (!listing) return <div>Loading...</div>;
+
+  return (
+    <div className="singlePage">
+      <div className="detail">
+        <div className="wrapper">
+          <Slider images={listing.images || []} />
+          <div className="info">
+            <div className="top">
+              <div className="post">
+                <h1>{listing.title}</h1>
+                <div className="address">
+                  <FaMapMarkerAlt />
+                  <span>{listing.location}</span>
                 </div>
+                <div className="price">Ksh {listing.price}</div>
+              </div>
+              <div className="user">
+                {listing.user?.avatar ? (
+                  <img src={listing.user.avatar} alt="User Avatar" />
+                ) : (
+                  <FaUserCircle size={50} />
+                )}
+                <span>{listing.user?.name}</span>
+              </div>
             </div>
-            <div className="features">
-                <div className="wrapper">
-                    <p className="title">General</p>
-                    <div className="listVerticle">
-                        <div className="feature">
-                            <img src="" alt="" />
-                            <div className="featureText">
-                                <span>Property Rent</span>
-                                <p>Payable by 10th</p>
-                            </div>
-                        </div>
-                        <div className="feature">
-                            <img src="" alt="" />
-                            <div className="featureText">
-                                <span>Garbage</span>
-                                <p>Renter is responsible</p>
-                            </div>
-                        </div>
-                        <div className="feature">
-                            <img src="" alt="" />
-                            <div className="featureText">
-                                <span>Water</span>
-                                <p>Renter is responsible</p>
-                            </div>
-                        </div>
-                        <div className="feature">
-                            <img src="" alt="" />
-                            <div className="featureText">
-                                <span>Electricty</span>
-                                <p>Renter is responsible</p>
-                            </div>
-                        </div>
-                    </div>
-                    <p className="title">Siezes</p>
-                    <div className="listHorizontal">
-                        <div className="sizes">
-                            <div className="size">
-                                <img src="size.png" alt="" />
-                                <span>30ft</span>
-                            </div>
-                            <div className="size">
-                                <img src="bath.png" alt="" />
-                                <span>1 bathroom</span>
-                            </div>
-                            <div className="size">
-                                <img src="bed.png" alt="" />
-                                <span>3 bed</span>
-                            </div>
-                    </div>
-                    </div>
-                    <p className="title">Nearby Places</p>
-                    <div className="listHorizontal"></div>
-                    <p className="title">Location</p>
-                    <div className="button">
-                        <button><img src="" alt="" /></button>
-                    </div>
-                </div>
+            <div className="bottom">
+              {listing.description || "No description provided."}
             </div>
+          </div>
         </div>
-    );
+      </div>
+
+      <div className="features">
+        <div className="wrapper">
+          <p className="title">General</p>
+          <div className="listVertical">
+            <div className="feature">
+              <FaMoneyBillWave />
+              <div className="featureText">
+                <span>Property Rent</span>
+                <p>{listing.rent_policy || "Payable by 10th"}</p>
+              </div>
+            </div>
+            <div className="feature">
+              <FaTrash />
+              <div className="featureText">
+                <span>Garbage</span>
+                <p>{listing.garbage || "Renter is responsible"}</p>
+              </div>
+            </div>
+            <div className="feature">
+              <FaTint />
+              <div className="featureText">
+                <span>Water</span>
+                <p>{listing.water || "Renter is responsible"}</p>
+              </div>
+            </div>
+            <div className="feature">
+              <FaBolt />
+              <div className="featureText">
+                <span>Electricity</span>
+                <p>{listing.electricity || "Renter is responsible"}</p>
+              </div>
+            </div>
+          </div>
+
+          <p className="title">Sizes</p>
+          <div className="listHorizontal">
+            <div className="sizes">
+              <div className="size">
+                <FaArrowsAltH />
+                <span>{listing.size || "N/A"} ft</span>
+              </div>
+              <div className="size">
+                <FaBath />
+                <span>{listing.bathrooms} bathroom{listing.bathrooms > 1 ? "s" : ""}</span>
+              </div>
+              <div className="size">
+                <FaBed />
+                <span>{listing.bedrooms} bed{listing.bedrooms > 1 ? "s" : ""}</span>
+              </div>
+            </div>
+          </div>
+
+          <p className="title">Nearby Places</p>
+          <div className="listHorizontal">
+            {listing.nearby?.map((place, index) => (
+              <div className="size" key={index}>
+                <FaMapMarkerAlt />
+                <span>{place}</span>
+              </div>
+            ))}
+          </div>
+
+          <p className="title">Location</p>
+          <div className="button">
+            <button>
+              <FaMap />
+              View on Map
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default SinglePage
+export default SinglePage;

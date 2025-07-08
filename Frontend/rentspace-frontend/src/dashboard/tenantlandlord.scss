@@ -1,3 +1,71 @@
 .tenantContainer {
     display: flex;
+    height: 100vh;
+    margin-top: 0;
+
+    .table {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        flex: 4;
+        height: 100%;
+
+        .summary {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            gap: 10px;
+            border: 2px solid;
+            border-radius: 10px;
+            border-color: #888081;
+            width: 80%;
+            align-self: center;
+
+            .sumBox {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                flex: 1 1 220px;
+                background-color: #ffffff;
+                border-radius: 16px;
+                padding: 14px 20px;
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+                align-items: center;
+                text-align: center;
+                transition: transform 0.2s ease;
+
+                &:hover {
+                    transform: translateY(-4px);
+                }
+
+                .icon {
+                    font-size: 28px;
+                    color: #3b82f6;
+                    margin: 12px 0;
+                    //align-self: flex-end;
+                }
+                h3 {
+                    font-size: 24px;
+                    color: #2c3e50;
+                    font-weight: 600;
+                    margin: 0;
+                }
+                p{
+                    font-size: 14px;
+                    color: #777;
+                    margin: 0;
+                    font-weight: 500;
+                }
+            }
+        }
+        .tableData {
+            width: 100%;
+            
+        }
+    }
+    .userProfile {
+        flex: 1;
+        height: 100%;
+    }
 }

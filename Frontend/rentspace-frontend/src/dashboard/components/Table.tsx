@@ -1,34 +1,89 @@
 import DataTable from "react-data-table-component";
 import React, { useState } from "react";
+import"./table.scss"
+import { FaPen, FaEye } from "react-icons/fa6";
 
-function Table(){
+function Table() {
 
     const columns = [
-        {name: "ID", selector: (row) => row.personID, sortable: true,},
-        {name: "Full Name", selector: (row) => row.fullName, sortable: true,},
-        {name: "Height", selector: (row) => row.height, sortable: true,},
-        {name: "eyeColor", selector: (row) => row.eyeColor, sortable: true,},
-         ];
+        {
+            name: "Property",
+            cell: (row) => (
+                <div className="propertyDetails">
+                    <img src="" alt="" />
+                    <div className="detail">
+                        <h4>{row.propertyName}</h4>
+                        <p>{row.location}</p>
+                    </div>
+                </div>
+            ),
+        },
+        { name: "Unit", selector: (row) => row.unit, sortable: true, },
+        { name: "Type", selector: (row) => row.type, sortable: true, },
+        { name: "Status", selector: (row) => row.status, sortable: true, },
+        { name: "Tenant Name", selector: (row) => row.tenantName, sortable: true, },
+        {
+            name: "Action",
+            width: "160px",
+            cell: (row) => <div className="action">
+                <button><FaPen className="icon" /> Edit</button>
+                <button><FaEye className="icon" /> View</button>
+            </div>
+        },
+    ];
     const data = [
         {
-           personID: 1,
-           fullName: "Kate Shein",
-           height: "1.79m",
-           eyeColor: "blue",
+            propertyName: "Westwood Apartments",
+            location: "Kileleshwa, Nairobi",
+            unit: "A-101",
+            type: "1 Bedroom",
+            status: "Occupied",
+            tenantName: "Alice Wanjiku",
+            image: "/assets/properties/westwood.png",
         },
         {
-           personID: 15,
-           fullName: "Isabella Thompson",
-           height: "1.79m",
-           eyeColor: "blue",
+            propertyName: "Palm Heights",
+            location: "Ruiru, Kiambu",
+            unit: "B-304",
+            type: "Studio",
+            status: "Vacant",
+            tenantName: "-",
+            image: "/assets/properties/palm.png",
+        },
+        {
+            propertyName: "Greenspan Court",
+            location: "Donholm, Nairobi",
+            unit: "C-205",
+            type: "2 Bedroom",
+            status: "Occupied",
+            tenantName: "Brian Otieno",
+            image: "/assets/properties/greenspan.png",
+        },
+        {
+            propertyName: "Hillview Estate",
+            location: "Ngong, Kajiado",
+            unit: "D-110",
+            type: "1 Bedroom",
+            status: "Pending",
+            tenantName: "Cynthia Mwangi",
+            image: "/assets/properties/hillview.png",
+        },
+        {
+            propertyName: "Cityscape Towers",
+            location: "Upper Hill, Nairobi",
+            unit: "E-501",
+            type: "3 Bedroom",
+            status: "Occupied",
+            tenantName: "David Kimani",
+            image: "/assets/properties/cityscape.png",
         },
     ];
     // definition of the rows constant
     const [records, setRecords] = useState(data);
 
-    function handleSearch(event){
-        const newData = data.filter( row =>{
-            return row.fullName.toLowerCase().includes(
+    function handleSearch(event) {
+        const newData = data.filter(row => {
+            return row.propertyName.toLowerCase().includes(
                 event.target.value.toLowerCase()
             )
         })
@@ -37,18 +92,19 @@ function Table(){
 
     return (
         <div className="container">
-            <input type="search" 
-            className="form-control-sm border ps-3"
-            placeholder="Search"
-            onChange={handleSearch}
-            />
+            <div className="top">
+                <div className="title">
+                    <span>All Property</span>
+                </div>
+                <input type="search" className="form-control" placeholder="Search" onChange={handleSearch}/>
+            </div>
             <DataTable
-            columns={columns}
-            data={records}
-            fixedHeader
-            title="React-Data-Table-Component Tutorial"
-            pagination
-            selectableRows
+                columns={columns}
+                data={records}
+                fixedHeader
+                title="React-Data-Table-Component Tutorial"
+                pagination
+                selectableRows
             />
         </div>
     );

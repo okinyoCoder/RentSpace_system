@@ -1,4 +1,3 @@
-// src/auth/AuthContext.js
 import React, { createContext, useState, useEffect } from 'react';
 
 export const AuthContext = createContext();
@@ -6,6 +5,7 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
+  // Load user from localStorage on initial render
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -13,6 +13,7 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  // Persist user to localStorage when it changes
   useEffect(() => {
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
@@ -21,6 +22,7 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
+  // Logout function clears user
   const logout = () => setUser(null);
 
   return (
