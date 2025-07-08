@@ -1,30 +1,34 @@
 from django.urls import path
+from django.urls import path
 from .views import (
     ListingListCreateAPIView, ListingDetailAPIView,
     ListingImageListCreateAPIView, ListingImageDetailAPIView,
     InquiryListCreateAPIView, InquiryDetailAPIView,
     PaymentListCreateAPIView, PaymentDetailAPIView,
     ReviewListCreateAPIView, ReviewDetailAPIView,
+    LocationListCreateAPIView, LocationDetailAPIView,
+    UnitListCreateAPIView, UnitDetailAPIView,
 )
 
 urlpatterns = [
-    # Listings
-    path('listings/', ListingListCreateAPIView.as_view(), name='listings'),
-    path('listings/<int:pk>/', ListingDetailAPIView.as_view(), name='listing-detail'),
-
-    # Images
-    path('images/', ListingImageListCreateAPIView.as_view(), name='images'),
-    path('images/<int:pk>/', ListingImageDetailAPIView.as_view(), name='image-detail'),
-
-    # Inquiries
-    path('inquiries/', InquiryListCreateAPIView.as_view(), name='inquiries'),
-    path('inquiries/<int:pk>/', InquiryDetailAPIView.as_view(), name='inquiry-detail'),
-
-    # Payments
-    path('payments/', PaymentListCreateAPIView.as_view(), name='payments'),
-    path('payments/<int:pk>/', PaymentDetailAPIView.as_view(), name='payment-detail'),
-
-    # Reviews
-    path('reviews/', ReviewListCreateAPIView.as_view(), name='reviews'),
-    path('reviews/<int:pk>/', ReviewDetailAPIView.as_view(), name='review-detail'),
+    path('listings/', ListingListCreateAPIView.as_view(), name='listing-list-create'),
+    path('listings/<uuid:pk>/', ListingDetailAPIView.as_view(), name='listing-detail'),
+    
+    path('listing-images/', ListingImageListCreateAPIView.as_view(), name='listing-image-list-create'),
+    path('listing-images/<int:pk>/', ListingImageDetailAPIView.as_view(), name='listing-image-detail'),
+    
+    path('inquiries/', InquiryListCreateAPIView.as_view(), name='inquiry-list-create'),
+    path('inquiries/<uuid:pk>/', InquiryDetailAPIView.as_view(), name='inquiry-detail'),
+    
+    path('payments/', PaymentListCreateAPIView.as_view(), name='payment-list-create'),
+    path('payments/<uuid:pk>/', PaymentDetailAPIView.as_view(), name='payment-detail'),
+    
+    path('reviews/', ReviewListCreateAPIView.as_view(), name='review-list-create'),
+    path('reviews/<uuid:pk>/', ReviewDetailAPIView.as_view(), name='review-detail'),
+    
+    path('locations/', LocationListCreateAPIView.as_view(), name='location-list-create'),
+    path('locations/<uuid:pk>/', LocationDetailAPIView.as_view(), name='location-detail'),
+    
+    path('units/', UnitListCreateAPIView.as_view(), name='unit-list-create'),
+    path('units/<int:pk>/', UnitDetailAPIView.as_view(), name='unit-detail'),
 ]

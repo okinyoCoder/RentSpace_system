@@ -1,25 +1,31 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from .models import Listing
-from .serializers import ListingSerializer, ListingDetailSerializer
-from django.shortcuts import get_object_or_404
-from django.shortcuts import get_object_or_404
-from .models import ListingImage, Inquiry, Payment, Review
 from django.contrib.auth import get_user_model
-from .serializers import (
-    ListingImageSerializer, InquirySerializer,
-    PaymentSerializer, ReviewSerializer
+
+from .models import (
+    Listing, ListingImage, Inquiry, Payment, Review,
+    Location, Unit
 )
+
+from .serializers import (
+    ListingSerializer, ListingDetailSerializer,
+    ListingImageSerializer, InquirySerializer,
+    PaymentSerializer, ReviewSerializer,
+    LocationSerializer, UnitSerializer
+)
+
+
+
 User = get_user_model()
 
 ####Begin proprty Listing###
 class ListingListCreateAPIView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
+    
     def get(self, request):
-        listings = Listing.objects.all()
+        listings = Listing.objects.select_related('location', 'landlord').all()
         serializer = ListingSerializer(listings, many=True)
         return Response(serializer.data)
 
@@ -153,16 +159,17 @@ class PaymentListCreateAPIView(APIView):
     def post(self, request):
         serializer = PaymentSerializer(data=request.data)
         if serializer.is_valid():
-            listing = serializer.validated_data.get('listing')
-            if listing is None:
+            validated = serializer.validated_data
+            listing = validated.get('listing')
+            
+            if not listing:
                 return Response({'listing': 'This field is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
             serializer.save(
                 tenant=request.user,
-                landlord=listing.landlord  # Assuming Listing has a landlord FK
+                landlord=listing.landlord  
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PaymentDetailAPIView(APIView):
@@ -228,4 +235,87 @@ class ReviewDetailAPIView(APIView):
     def delete(self, request, pk):
         review = self.get_object(pk)
         review.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+###### Begin Location views
+class LocationListCreateAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        locations = Location.objects.all()
+        serializer = LocationSerializer(locations, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = LocationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LocationDetailAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_object(self, pk):
+        return get_object_or_404(Location, pk=pk)
+
+    def get(self, request, pk):
+        location = self.get_object(pk)
+        serializer = LocationSerializer(location)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        location = self.get_object(pk)
+        serializer = LocationSerializer(location, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        location = self.get_object(pk)
+        location.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+###### Begin unit views
+class UnitListCreateAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        units = Unit.objects.all()
+        serializer = UnitSerializer(units, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UnitSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UnitDetailAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_object(self, pk):
+        return get_object_or_404(Unit, pk=pk)
+
+    def get(self, request, pk):
+        unit = self.get_object(pk)
+        serializer = UnitSerializer(unit)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        unit = self.get_object(pk)
+        serializer = UnitSerializer(unit, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        unit = self.get_object(pk)
+        unit.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
