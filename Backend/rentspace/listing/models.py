@@ -62,14 +62,9 @@ class Unit(models.Model):
     def __str__(self):
         return f"{self.listing.title} - Unit {self.unit_number}"
 
-
-def listing_image_upload_path(instance, filename):
-    return f'property_image/{instance.listing.id}/{filename}'
-
-
 class ListingImage(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='images')
-    property_image = models.ImageField(upload_to=listing_image_upload_path)
+    property_image = models.ImageField(upload_to='property/images/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
 

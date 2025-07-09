@@ -19,7 +19,7 @@ class CustomUserManager(BaseUserManager):
             **extra_fields
         )
         user.set_password(password)
-        user.save(self._db)
+        user.save(using=self._db)
         return user
     
     def create_superuser(self, email, username, password=None, **extra_fields):
@@ -35,24 +35,27 @@ class CustomUser(AbstractUser):
         ('landlord', 'Landlord'),
         ('admin', 'Admin'),
     )
-    
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField("email address", max_length=254, unique=True)
-    date_of_birth = models.DateField()
-    phone_number = models.IntegerField()
-    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True)
+    username = models.CharField(max_length=50, unique=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    username = models.CharField(max_length=50, unique=True)
-    user_type = models.CharField(max_length=10,choices=USER_CHOICES, default='tenant')
-    date_joined = models.DateField(auto_now_add=True)
+    phone_number = models.IntegerField(null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_photos/', blank=True) 
+    user_type = models.CharField(max_length=10, choices=USER_CHOICES, default='tenant')
+    date_of_birth = models.DateField(null=True, blank=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
-    
+    is_admin = models.BooleanField(default=False)  
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+
     objects = CustomUserManager()
-    
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
-    
+
     def __str__(self):
         return f"{self.username} ({self.user_type})"
