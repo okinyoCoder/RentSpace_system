@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import BaseUserManager, AbstractUser
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None, user_type='tenant',**extra_fields):
@@ -29,7 +29,7 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, username, password, user_type='admin', **extra_fields)
 
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractUser):
     USER_CHOICES = (
         ('tenant', 'Tenant'),
         ('landlord', 'Landlord'),

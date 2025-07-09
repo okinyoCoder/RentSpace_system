@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -23,14 +24,14 @@ User = get_user_model()
 ####Begin proprty Listing###
 class ListingListCreateAPIView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
+
     def get(self, request):
-        listings = Listing.objects.select_related('location', 'landlord').all()
-        serializer = ListingSerializer(listings, many=True)
+        listings = Listing.objects.select_related('location', 'landlord').prefetch_related('images', 'reviews', 'units').all()
+        serializer = ListingDetailSerializer(listings, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = ListingSerializer(data=request.data)
+        serializer = ListingSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save(landlord=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -45,14 +46,14 @@ class ListingDetailAPIView(APIView):
 
     def get(self, request, pk):
         listing = self.get_object(pk)
-        serializer = ListingDetailSerializer(listing)
+        serializer = ListingDetailSerializer(listing, context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, pk):
         listing = self.get_object(pk)
         if listing.landlord != request.user:
             return Response({'detail': 'Not authorized.'}, status=status.HTTP_403_FORBIDDEN)
-        serializer = ListingSerializer(listing, data=request.data)
+        serializer = ListingSerializer(listing, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

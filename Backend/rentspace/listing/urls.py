@@ -1,14 +1,8 @@
 from django.urls import path
-from django.urls import path
-from .views import (
-    ListingListCreateAPIView, ListingDetailAPIView,
-    ListingImageListCreateAPIView, ListingImageDetailAPIView,
-    InquiryListCreateAPIView, InquiryDetailAPIView,
-    PaymentListCreateAPIView, PaymentDetailAPIView,
-    ReviewListCreateAPIView, ReviewDetailAPIView,
-    LocationListCreateAPIView, LocationDetailAPIView,
-    UnitListCreateAPIView, UnitDetailAPIView,
-)
+from .views import ListingListCreateAPIView, ListingDetailAPIView,ListingImageListCreateAPIView, ListingImageDetailAPIView 
+from .views import  ReviewListCreateAPIView, ReviewDetailAPIView, LocationListCreateAPIView, LocationDetailAPIView,UnitListCreateAPIView
+from .views import InquiryListCreateAPIView, InquiryDetailAPIView, PaymentListCreateAPIView, PaymentDetailAPIView, UnitDetailAPIView
+
 
 urlpatterns = [
     path('listings/', ListingListCreateAPIView.as_view(), name='listing-list-create'),
