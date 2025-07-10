@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-import "./tenantlandlord.scss";
+import "./tenant.scss";
 import Tenant from "./components/Tenant.tsx";
 import TenantCard from "./components/TenantCard.jsx";
 import {
@@ -10,7 +10,7 @@ import {
     FaBuildingUser,
 } from "react-icons/fa6";
 
-export default function TenantLandlord() {
+export default function Tenants() {
     const [summary, setSummary] = useState({
         totalProperties: 0,
         totalTenants: 0,

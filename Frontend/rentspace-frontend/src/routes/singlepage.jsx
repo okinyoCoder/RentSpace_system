@@ -39,14 +39,14 @@ function SinglePage() {
     <div className="singlePage">
       <div className="detail">
         <div className="wrapper">
-          <Slider images={listing.images || []} />
+          <Slider images={listing.images?.map(img => img.image) || []} />
           <div className="info">
             <div className="top">
               <div className="post">
                 <h1>{listing.title}</h1>
                 <div className="address">
                   <FaMapMarkerAlt />
-                  <span>{listing.location}</span>
+                  <span>{listing.location?.county || 'Unknown Location'}, {listing.location?.town}, {listing.location?.estate}</span>
                 </div>
                 <div className="price">Ksh {listing.price}</div>
               </div>

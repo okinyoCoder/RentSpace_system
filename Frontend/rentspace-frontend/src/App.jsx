@@ -8,13 +8,13 @@ import Layout from './layout/layout';
 import SinglePage from './routes/singlepage';
 import ProfilePage from './routes/profilePage';
 import LandlordPage from './dashboard/landlordPage';
-
-import DashboardHome from './dashboard/DashboardHome';
-import PropertyLandlord from './dashboard/PropertyLandlord';
-import TenantLandlord from './dashboard/TenantLandlord';
-import ProfileLandlord from './dashboard/ProfileLandlord';
 import Login from "./auth/Login";
 import Register from './auth/Register';
+import Landlord from './dashboard/Landlord';
+import Tenants from './dashboard/Tenants';
+import Property from './dashboard/Property';
+import Profile from './dashboard/Profile';
+import CreateProperty from './dashboard/components/CreateProperty';
 
 function App() {
   const router = createBrowserRouter([
@@ -22,7 +22,7 @@ function App() {
       path: "/login",
       element: <Login />,
     },
-    { 
+    {
       path: "register",
       element: <Register />,
     },
@@ -35,13 +35,30 @@ function App() {
         { path: "property/:id", element: <SinglePage /> },
         { path: "profile", element: <ProfilePage /> },
         {
-          path: "dashboard",
+          path: "landlord",
           element: <LandlordPage />,
           children: [
-            { index: true, element: <DashboardHome /> },
-            { path: "property", element: <PropertyLandlord /> },
-            { path: "tenant", element: <TenantLandlord /> },
-            { path: "profile", element: <ProfileLandlord /> },
+            { index: true, element: <Landlord /> },
+            {
+              path: "property",
+              element: <Property />,
+              children: [
+                {
+                  path: "/landlord/property/add/",
+                  element: <CreateProperty />,
+                },
+                {
+                  path: "/landlord/property/:id",
+                  element: <PropertyView />,
+                },
+                {
+                  path: "/landlord/property/edit/:id",
+                  element: <PropertyEdit />,
+                },
+              ]
+            },
+            { path: "tenant", element: <Tenants /> },
+            { path: "profile", element: <Profile /> },
           ],
         },
       ],

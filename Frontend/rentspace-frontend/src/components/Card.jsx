@@ -14,7 +14,7 @@ function Card({ listing }) {
                 </h3>
                 <div className="card-location">
                     <FaMapMarkerAlt className="icon" />
-                    <span>{listing.location || 'Unknown Location'}</span>
+                    <span>{listing.location?.county || 'Unknown Location'}, {listing.location?.town}, {listing.location?.estate}</span>
                 </div>
                 <div className="card-price">Ksh. {listing.price?.toLocaleString()}</div>
                 <div className="card-footer">

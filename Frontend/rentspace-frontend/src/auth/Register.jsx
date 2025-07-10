@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import { AuthContext } from './AuthContext';
-import './Register.scss';
+import { api } from '../api/axios';
+import { AuthContext } from '../auth/AuthContext';
+import "./Register.scss";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -25,9 +25,26 @@ export default function Register() {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await api.post('/auth/register/', formData);
-            setUser(res.data.user);
-            if (res.data.user.role === 'landlord') {
+            // 1. Register the user
+            await api.post('/auth/register/', formData);
+
+            // 2. Login immediately after registration
+            const loginRes = await api.post('/auth/login/', {
+                email: formData.email,
+                password: formData.password
+            });
+
+            const { access, refresh, user } = loginRes.data;
+
+            // 3. Store tokens (basic localStorage approach)
+            localStorage.setItem('access', access);
+            localStorage.setItem('refresh', refresh);
+
+            // 4. Save user in context
+            setUser(user);
+
+            // 5. Redirect based on role
+            if (user.role === 'landlord') {
                 navigate('/dashboard');
             } else {
                 navigate('/');

@@ -1,6 +1,6 @@
-import "./dashHome.scss"
+import "./landlord.scss"
 
-export default function DashboardHome() {
+export default function Landlord() {
     return (
         <div className="dashContainer">
             Dashboard

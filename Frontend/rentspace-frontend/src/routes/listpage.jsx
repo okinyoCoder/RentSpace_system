@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Card from '../components/Card';
 import Filter from '../components/Filter';
 import './listpage.scss';
-import api from '../api/axios';
+import { authApi } from '../api/axios'; // ✅ Use authApi for protected endpoints
 
 function Listpage() {
     const [listings, setListings] = useState([]);
@@ -10,12 +10,12 @@ function Listpage() {
         county: '',
         property: '',
         minPrice: '',
-        maxPrice: ''
+        maxPrice: '',
     });
 
     const fetchListings = async () => {
         try {
-            const response = await api.get('/listings/', { params: filters });
+            const response = await authApi.get('/listings/', { params: { ...filters } });
             setListings(response.data);
         } catch (err) {
             console.error('Failed to fetch listings:', err);
@@ -30,9 +30,13 @@ function Listpage() {
         <div className="listpage">
             <div className="listContainer">
                 <Filter filters={filters} setFilters={setFilters} />
-                {listings.map(listing => (
-                    <Card key={listing.id} listing={listing} />
-                ))}
+                {listings.length === 0 ? (
+                    <p>No listings found.</p>
+                ) : (
+                    listings.map((listing) => (
+                        <Card key={listing.id} listing={listing} />
+                    ))
+                )}
             </div>
         </div>
     );

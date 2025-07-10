@@ -25,12 +25,13 @@ class Location(models.Model):
 class Listing(models.Model):
     PROPERTY_CHOICES = (
         ('bedsitter', 'Bedsitter'),
-        ('1br', '1 Bedroom'),
-        ('2br', '2 Bedroom'),
+        ('one_bedroom', '1 Bedroom'),
+        ('two_bedroom', '2 Bedroom'),
         ('studio', 'Studio'),
         ('mansion', 'Mansion'),
-        ('single', 'Single'),
+        ('single_room', 'Single'),
         ('double_room', 'Double Room'),
+        ('bungalow', 'Bungalow'),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -13,10 +13,10 @@ import "./sidebar.scss";
 
 // Updated nav items to match /dashboard child routes
 const navItems = [
-    { name: "Home", path: "/dashboard", icon: <FiDashboard /> },
-    { name: "Properties", path: "/dashboard/property", icon: <FiHome /> },
-    { name: "Tenants", path: "/dashboard/tenant", icon: <FiUsers /> },
-    { name: "Profile", path: "/dashboard/profile", icon: <FiUser /> },
+    { name: "Home", path: "/landlord/", icon: <FiDashboard /> },
+    { name: "Property", path: "/landlord/property", icon: <FiHome /> },
+    { name: "Tenants", path: "/landlord/tenant", icon: <FiUsers /> },
+    { name: "Profile", path: "/landlord/profile", icon: <FiUser /> },
 ];
 
 const SideBar = ({ user, onLogout }) => {
@@ -27,7 +27,7 @@ const SideBar = ({ user, onLogout }) => {
                 <span className="title">Landlord Dashboard</span>
             </div>
 
-            {user && (
+            {user?.avatar && (
                 <div className="profile">
                     <img src={user.avatar} alt={`${user.name}'s avatar`} />
                     <div className="info">
@@ -44,7 +44,7 @@ const SideBar = ({ user, onLogout }) => {
                             <NavLink
                                 to={item.path}
                                 className={({ isActive }) => (isActive ? "active" : "")}
-                                end={item.path === "/dashboard"}
+                                end={item.path === "/landlord"}
                             >
                                 <span className="icon">{item.icon}</span>
                                 <span>{item.name}</span>

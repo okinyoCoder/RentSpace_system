@@ -23,10 +23,36 @@ User = get_user_model()
 
 ####Begin proprty Listing###
 class ListingListCreateAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]   
     def get(self, request):
-        listings = Listing.objects.select_related('location', 'landlord').prefetch_related('images', 'reviews', 'units').all()
+        listings = Listing.objects.select_related('location', 'landlord') \
+                                  .prefetch_related('images', 'reviews', 'units') \
+                                  .all()
+
+        # Filtering parameters from query string
+        county = request.query_params.get('county')
+        property_type = request.query_params.get('property')
+        min_price = request.query_params.get('minPrice')
+        max_price = request.query_params.get('maxPrice')
+
+        # Apply county filter (via related Location model)
+        if county:
+            listings = listings.filter(location__county__iexact=county)
+
+        # Apply property type filter
+        if property_type:
+            listings = listings.filter(property_type__iexact=property_type)
+
+        # Apply price filtering using related Unit model
+        if min_price:
+            listings = listings.filter(units__rent__gte=min_price)
+
+        if max_price:
+            listings = listings.filter(units__rent__lte=max_price)
+
+        # Remove duplicates due to join on units
+        listings = listings.distinct()
+
         serializer = ListingDetailSerializer(listings, many=True, context={'request': request})
         return Response(serializer.data)
 
