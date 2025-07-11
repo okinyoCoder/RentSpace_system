@@ -7,6 +7,10 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth import logout
 from .serializers import UserSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
 
 User = get_user_model()
 
@@ -65,5 +69,5 @@ class LogoutView(APIView):
     """system logout view"""
     def post(self, request):
         logout(request)
-        return Response({"message": "Logged out successfully."}, status=status.HTTP_200_OK)     
-        
+        return Response({"message": "Logged out successfully."}, status=status.HTTP_200_OK)
+

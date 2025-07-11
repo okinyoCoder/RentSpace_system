@@ -15,6 +15,8 @@ import Tenants from './dashboard/Tenants';
 import Property from './dashboard/Property';
 import Profile from './dashboard/Profile';
 import CreateProperty from './dashboard/components/CreateProperty';
+import PropertyView from './dashboard/components/PropertyView';
+import PropertyEdit from './dashboard/components/PropertyEdit'; 
 
 function App() {
   const router = createBrowserRouter([
@@ -43,19 +45,10 @@ function App() {
               path: "property",
               element: <Property />,
               children: [
-                {
-                  path: "/landlord/property/add/",
-                  element: <CreateProperty />,
-                },
-                {
-                  path: "/landlord/property/:id",
-                  element: <PropertyView />,
-                },
-                {
-                  path: "/landlord/property/edit/:id",
-                  element: <PropertyEdit />,
-                },
-              ]
+                { path: "add", element: <CreateProperty /> },
+                { path: "id", element: <PropertyView /> },
+                { path: "edit/:id", element: <PropertyEdit /> },
+              ],
             },
             { path: "tenant", element: <Tenants /> },
             { path: "profile", element: <Profile /> },

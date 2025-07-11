@@ -51,6 +51,11 @@ class Listing(models.Model):
 
 
 class Unit(models.Model):
+    APPROVAL_STATUS = (
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    )
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='units')
     unit_number = models.CharField(max_length=50)
     floor = models.IntegerField(default=1)
@@ -58,6 +63,7 @@ class Unit(models.Model):
     bathrooms = models.IntegerField(default=1)
     rent = models.DecimalField(max_digits=10, decimal_places=2)
     is_occupied = models.BooleanField(default=False)
+    status = models.CharField(max_length=10, choices=APPROVAL_STATUS, default='pending')
     tenant = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='occupied_units')
 
     def __str__(self):
@@ -69,13 +75,16 @@ class ListingImage(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
 
-class Inquiry(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='inquiries')
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='inquiries')
-    message = models.TextField(max_length=254)
-    response = models.TextField(max_length=254, blank=True)
+class Message(models.Model):
+    sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
+    recipient = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='messages')
+    content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-timestamp']
 
     def __str__(self):
         return f"Inquiry by {self.tenant.username} on {self.listing.title}"

@@ -2,7 +2,6 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import {
     FiHome,
-    FiHome as FiDashboard,
     FiUsers,
     FiUser,
     FiSettings,
@@ -11,9 +10,8 @@ import {
 
 import "./sidebar.scss";
 
-// Updated nav items to match /dashboard child routes
 const navItems = [
-    { name: "Home", path: "/landlord/", icon: <FiDashboard /> },
+    { name: "Home", path: "/landlord/", icon: <FiHome /> },
     { name: "Property", path: "/landlord/property", icon: <FiHome /> },
     { name: "Tenants", path: "/landlord/tenant", icon: <FiUsers /> },
     { name: "Profile", path: "/landlord/profile", icon: <FiUser /> },
@@ -43,11 +41,13 @@ const SideBar = ({ user, onLogout }) => {
                         <li key={item.name}>
                             <NavLink
                                 to={item.path}
-                                className={({ isActive }) => (isActive ? "active" : "")}
-                                end={item.path === "/landlord"}
+                                className={({ isActive }) =>
+                                    isActive ? "nav-link active" : "nav-link"
+                                }
+                                end
                             >
                                 <span className="icon">{item.icon}</span>
-                                <span>{item.name}</span>
+                                <span className="label">{item.name}</span>
                             </NavLink>
                         </li>
                     ))}

@@ -1,71 +1,141 @@
 .tenantCard {
-  background-color: #ffffff;
+  background: #fff;
   border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
   padding: 24px;
-  max-width: 420px;
-  margin: auto;
-  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 
   .cardWrapper {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-  }
 
-  .header {
-    text-align: center;
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
 
-    img {
-      width: 90px;
-      height: 90px;
-      object-fit: cover;
-      border-radius: 50%;
-      margin-bottom: 12px;
+      img {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 10px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        margin: 5px 0;
+        color: #333;
+      }
+
+      .location {
+        font-size: 0.95rem;
+        color: #666;
+      }
+
+      .pending {
+        color: #c0392b;
+        font-weight: 500;
+        margin-top: 8px;
+      }
     }
 
-    h2 {
-      font-size: 22px;
-      font-weight: 600;
-      color: #2c3e50;
-      margin: 0;
+    .section {
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .infoBox {
+        label {
+          display: block;
+          font-weight: 500;
+          font-size: 0.85rem;
+          color: #888;
+        }
+
+        p {
+          margin: 4px 0 0;
+          font-size: 0.95rem;
+          color: #333;
+        }
+      }
+
+      .infoGroup {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+
+        .infoBox {
+          flex: 1;
+        }
+      }
     }
 
-    .location {
-      font-size: 14px;
-      color: #888;
-      margin-top: 4px;
+    .messageSection {
+      margin-top: 25px;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+
+      h4 {
+        margin-bottom: 10px;
+        font-size: 1rem;
+        color: #333;
+      }
+
+      textarea {
+        width: 100%;
+        height: 80px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        resize: none;
+        font-size: 0.95rem;
+        font-family: inherit;
+        margin-bottom: 10px;
+        transition: border 0.2s ease;
+
+        &:focus {
+          outline: none;
+          border-color: #3498db;
+        }
+      }
+
+      button {
+        padding: 8px 16px;
+        background-color: #3498db;
+        color: #fff;
+        font-size: 0.95rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+
+        &:hover {
+          background-color: #2980b9;
+        }
+      }
+
+      .messageStatus {
+        margin-top: 8px;
+        font-size: 0.85rem;
+        color: #27ae60;
+      }
     }
   }
 
-  .section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
+  // Responsive
+  @media (max-width: 600px) {
+    padding: 16px;
 
-  .infoGroup {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-  }
-
-  .infoBox {
-    flex: 1;
-
-    label {
-      display: block;
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 4px;
-      font-weight: 500;
+    .header img {
+      width: 70px;
+      height: 70px;
     }
 
-    p {
-      font-size: 15px;
-      color: #2c3e50;
-      font-weight: 600;
-      margin: 0;
+    .section .infoGroup {
+      flex-direction: column;
     }
   }
 }

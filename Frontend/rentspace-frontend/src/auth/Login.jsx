@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode'; // ✅ Correct import
-import { api } from '../api/axios';     // ✅ Points to /auth base URL
+import { jwtDecode } from 'jwt-decode'; 
+import { authApi } from '../api/axios';     
 import { AuthContext } from '../auth/AuthContext';
 import './Login.scss';
 import { FaUserPlus } from 'react-icons/fa6';
@@ -23,12 +23,11 @@ export default function Login() {
     setError(null);
 
     try {
-      const response = await api.post('login/', formData); // Calls /auth/login/
+      const response = await authApi.post('login/', formData); // Calls /auth/login/
       const { access, refresh } = response.data;
 
       if (!access) throw new Error('No access token received');
 
-      // ✅ Use correct decode function
       const decoded = jwtDecode(access);
 
       const user = {

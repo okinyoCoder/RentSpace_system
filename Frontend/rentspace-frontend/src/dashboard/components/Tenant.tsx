@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
+import axios from "axios";
 import "./TenantTable.scss";
 
 function Tenant({ onSelectTenant }) {
@@ -9,41 +10,67 @@ function Tenant({ onSelectTenant }) {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await fetch("/api/landlord/tenants");
-        const data = await response.json();
+        const response = await axios.get("/landlord/tenants/");
+        console.log("Tenants API response:", response.data); // 🕵️‍♀️ Log it
+
+        const data = Array.isArray(response.data)
+          ? response.data
+          : response.data?.results || []; // if paginated
+
         setRecords(data);
         setFiltered(data);
       } catch (error) {
         console.error("Failed to fetch tenants", error);
+        setRecords([]);
+        setFiltered([]);
       }
     };
 
     fetchTenants();
   }, []);
 
+  const approveTenant = async (unitId) => {
+    try {
+      await axios.post(`/property/landlord/tenants/approve/${unitId}/`);
+      alert("Tenant approved successfully");
+
+      // Refresh data after approval
+      const response = await axios.get("/property/landlord/tenants/approve/${unitId}/");
+      const data = response.data;
+      setRecords(data);
+      setFiltered(data);
+    } catch (error) {
+      console.error("Approval failed", error);
+      alert("Approval failed");
+    }
+  };
+
   const columns = [
     {
-      name: "Date",
-      selector: (row) => row.personID,
+      name: "Tenant Name",
+      selector: (row) => row.tenant?.full_name || "N/A",
       sortable: true,
     },
     {
       name: "Property",
       cell: (row) => (
         <div className="propDetail">
-          <img src={row.image} alt="" />
-          <span>{row.propertyLocation}</span>
+          {row.listing_image ? (
+            <img src={row.listing_image} alt="Property" />
+          ) : (<img src="/assets/house.png" alt="Default Property" />
+)}
+          <span>{row.listing_title || "Untitled"}</span>
         </div>
       ),
     },
     {
       name: "Unit-No",
-      selector: (row) => row.unit,
+      selector: (row) => row.unit_number || "N/A",
       sortable: true,
     },
     {
-      name: "Tenant Name",
-      selector: (row) => row.tenantName,
+      name: "Status",
+      selector: (row) => (row.is_occupied ? "Approved" : "Pending"),
       sortable: true,
     },
     {
@@ -51,6 +78,14 @@ function Tenant({ onSelectTenant }) {
       cell: (row) => (
         <div className="action">
           <button onClick={() => onSelectTenant(row)}>View Detail</button>
+          {!row.is_occupied && (
+            <button
+              className="approveBtn"
+              onClick={() => approveTenant(row.id)}
+            >
+              Approve
+            </button>
+          )}
         </div>
       ),
     },
@@ -59,7 +94,7 @@ function Tenant({ onSelectTenant }) {
   const handleSearch = (event) => {
     const keyword = event.target.value.toLowerCase();
     const result = records.filter((row) =>
-      row.username.toLowerCase().includes(keyword)
+      row.tenant?.full_name?.toLowerCase().includes(keyword)
     );
     setFiltered(result);
   };
@@ -71,17 +106,18 @@ function Tenant({ onSelectTenant }) {
         <input
           type="search"
           className="form-control"
-          placeholder="Search"
+          placeholder="Search tenants..."
           onChange={handleSearch}
         />
       </div>
+
       <DataTable
         columns={columns}
-        data={filtered}
+        data={Array.isArray(filtered) ? filtered : []}
         fixedHeader
-        title="Tenants Table"
         pagination
         selectableRows
+        title="Tenants Table"
       />
     </div>
   );

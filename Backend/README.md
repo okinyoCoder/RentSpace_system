@@ -1,0 +1,1 @@
+pip install channels channels_redis

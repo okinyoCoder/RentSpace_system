@@ -13,12 +13,20 @@ function PropertyTable() {
     useEffect(() => {
         const fetchListings = async () => {
             try {
-                const res = await fetch("/api/listings/");
+                const res = await fetch("/property/listings/");
                 const data = await res.json();
-                setRecords(data);
-                setFiltered(data);
+
+                console.log("Fetched listings:", data);
+
+                // Defensive fallback
+                const listings = Array.isArray(data) ? data : data?.results || [];
+
+                setRecords(listings);
+                setFiltered(listings);
             } catch (error) {
                 console.error("Error fetching listings:", error);
+                setRecords([]);
+                setFiltered([]);
             }
         };
 
@@ -28,8 +36,9 @@ function PropertyTable() {
     // Filter by search
     const handleSearch = (e) => {
         const query = e.target.value.toLowerCase();
+
         const results = records.filter(row =>
-            row.title.toLowerCase().includes(query)
+            (row.title || "").toLowerCase().includes(query)
         );
         setFiltered(results);
     };
@@ -58,10 +67,10 @@ function PropertyTable() {
             name: "Action",
             cell: (row) => (
                 <div className="action">
-                    <button onClick={() => navigate(`/dashboard/property/edit/${row.id}`)}>
+                    <button onClick={() => navigate(`/landlord/property/edit/${row.id}`)}>
                         <FaPen className="icon" /> Edit
                     </button>
-                    <button onClick={() => navigate(`/dashboard/property/${row.id}`)}>
+                    <button onClick={() => navigate(`/landlord/property/${row.id}`)}>
                         <FaEye className="icon" /> View
                     </button>
                 </div>

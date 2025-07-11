@@ -3,14 +3,14 @@ import axios from 'axios';
 const BASE_URL = 'http://localhost:8000';
 
 const api = axios.create({
-  baseURL: `${BASE_URL}/auth/`,
+  baseURL: `${BASE_URL}/api/`,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 const authApi = axios.create({
-  baseURL: `${BASE_URL}/api/`,
+  baseURL: `${BASE_URL}/api/account/`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -40,7 +40,7 @@ authApi.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url.includes('/auth/token/refresh/')
+      !originalRequest.url.includes('/token/refresh/')
     ) {
       originalRequest._retry = true;
       try {

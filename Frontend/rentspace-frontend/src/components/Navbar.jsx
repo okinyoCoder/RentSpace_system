@@ -9,7 +9,7 @@ function Navbar(){
         <nav className="navTop">
             <div className="left">
                 <Link className="logo a">
-                    <img src="" alt="" />
+                    <img src="/assets/logo.png" alt="Rentspace Logo" />
                     <span>Rentspace Finder</span>
                 </Link>
                 <Link to="/" className="a">home</Link>
@@ -19,7 +19,7 @@ function Navbar(){
             <div className="right">
                 {user ?(
                      <div className="user">
-                        <img src="" alt="" />
+                         <img src={user.avatar || "/assets/default-avatar.png"} alt="User Avatar" />
                         <span>user.name</span>
                         <Link to="/profile" className="profile a">
                             <div className="notification"></div>

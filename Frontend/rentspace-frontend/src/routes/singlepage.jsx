@@ -22,7 +22,7 @@ function SinglePage() {
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        const res = await fetch(`/api/listings/${id}`);
+        const res = await fetch(`/api/property/listings/${id}`);
         const data = await res.json();
         setListing(data);
       } catch (error) {

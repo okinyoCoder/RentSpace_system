@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import PropertyTable from "./components/Properties";
 import "./properties.scss";
+import CreateProperty from './components/CreateProperty';
 
 export default function Property() {
     const [showForm, setShowForm] = useState(false);

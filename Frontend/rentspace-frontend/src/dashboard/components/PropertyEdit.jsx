@@ -7,7 +7,7 @@ function PropertyEdit() {
   const [formData, setFormData] = useState(null);
 
   useEffect(() => {
-    fetch(`/api/listings/${id}/`)
+    fetch(`/property/listings/${id}/`)
       .then((res) => res.json())
       .then((data) => setFormData(data));
   }, [id]);
@@ -19,12 +19,12 @@ function PropertyEdit() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await fetch(`/api/listings/${id}/`, {
+    await fetch(`/property/listings/${id}/`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
-    navigate("/dashboard/property");
+    navigate("/landlord/property");
   };
 
   if (!formData) return <div>Loading...</div>;

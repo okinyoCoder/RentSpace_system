@@ -1,4 +1,4 @@
-import "./profilelandlord.scss"
+import "./profile.scss"
 
 export default function Profile() {
     return (

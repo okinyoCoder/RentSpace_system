@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import (
-    Listing, ListingImage, Inquiry, Payment, Review,
+    Listing, ListingImage, Message, Payment, Review,
     Location, Unit
 )
 from account.serializers import UserSerializer
@@ -27,9 +27,9 @@ class UnitSerializer(serializers.ModelSerializer):
         model = Unit
         fields = [
             'id', 'listing', 'unit_number', 'floor',
-            'bedrooms', 'bathrooms', 'rent', 'is_occupied', 'tenant'
+            'bedrooms', 'bathrooms', 'rent', 'is_occupied', 'tenant', 'status'
         ]
-        read_only_fields = ['id', 'tenant']
+        read_only_fields = ['id', 'tenant', 'is_occupied', 'status']
 
 
 class ListingSerializer(serializers.ModelSerializer):
@@ -75,13 +75,14 @@ class ListingImageSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'uploaded_at']
 
 
-class InquirySerializer(serializers.ModelSerializer):
-    tenant = UserSerializer(read_only=True)
+class MessageSerializer(serializers.ModelSerializer):
+    sender = UserSerializer(read_only=True)
+    recipient = UserSerializer(read_only=True)
 
     class Meta:
-        model = Inquiry
-        fields = ['id', 'tenant', 'listing', 'message', 'response', 'timestamp']
-        read_only_fields = ['id', 'timestamp', 'response']
+        model = Message
+        fields = ['id', 'sender', 'recipient', 'listing', 'content', 'timestamp', 'is_read']
+        read_only_fields = ['id', 'timestamp', 'sender']
 
 
 class PaymentSerializer(serializers.ModelSerializer):
