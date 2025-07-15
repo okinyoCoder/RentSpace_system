@@ -42,8 +42,8 @@ class ListingSerializer(serializers.ModelSerializer):
         model = Listing
         fields = [
             'id', 'landlord', 'title', 'description',
-            'price', 'property_type', 'location',
-            'is_verified', 'is_vacant', 'avg_rating',
+              'property_type', 'location',
+            'is_verified', 'avg_rating',
             'review_count', 'created_at'
         ]
         read_only_fields = [

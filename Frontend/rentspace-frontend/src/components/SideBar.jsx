@@ -1,13 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import {
-    FiHome,
-    FiUsers,
-    FiUser,
-    FiSettings,
-    FiLogOut,
-} from "react-icons/fi";
-
+import { FiHome, FiUsers, FiUser, FiLogOut } from "react-icons/fi";
 import "./sidebar.scss";
 
 const navItems = [
@@ -20,16 +13,20 @@ const navItems = [
 const SideBar = ({ user, onLogout }) => {
     return (
         <aside className="sidebar">
-            <div className="logo">
-                <img src="/logo.svg" alt="App logo" />
+            <div className="sidebar-header">
+                <img src="/logo.svg" alt="App logo" className="logo" />
                 <span className="title">Landlord Dashboard</span>
             </div>
 
-            {user?.avatar && (
-                <div className="profile">
-                    <img src={user.avatar} alt={`${user.name}'s avatar`} />
-                    <div className="info">
-                        <p className="name">{user.name}</p>
+            {user && (
+                <div className="user-info">
+                    <img
+                        src={user.avatar || "/default-avatar.png"}
+                        alt={user.username || "User"}
+                        className="avatar"
+                    />
+                    <div className="userText-info">
+                        <p className="username">{user.username || "No Name"}</p>
                         <p className="email">{user.email}</p>
                     </div>
                 </div>
@@ -54,7 +51,7 @@ const SideBar = ({ user, onLogout }) => {
                 </ul>
             </nav>
 
-            <button className="logout" onClick={onLogout}>
+            <button className="logout-btn" onClick={onLogout}>
                 <FiLogOut className="icon" />
                 <span>Logout</span>
             </button>

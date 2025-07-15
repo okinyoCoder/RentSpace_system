@@ -16,7 +16,8 @@ import Property from './dashboard/Property';
 import Profile from './dashboard/Profile';
 import CreateProperty from './dashboard/components/CreateProperty';
 import PropertyView from './dashboard/components/PropertyView';
-import PropertyEdit from './dashboard/components/PropertyEdit'; 
+import PropertyEdit from './dashboard/components/PropertyEdit';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   const router = createBrowserRouter([
@@ -25,7 +26,7 @@ function App() {
       element: <Login />,
     },
     {
-      path: "register",
+      path: "/register",
       element: <Register />,
     },
     {
@@ -38,7 +39,11 @@ function App() {
         { path: "profile", element: <ProfilePage /> },
         {
           path: "landlord",
-          element: <LandlordPage />,
+          element: (
+            <PrivateRoute allowedRoles={["landlord"]}>
+              <LandlordPage />
+            </PrivateRoute>
+          ),
           children: [
             { index: true, element: <Landlord /> },
             {
@@ -46,7 +51,7 @@ function App() {
               element: <Property />,
               children: [
                 { path: "add", element: <CreateProperty /> },
-                { path: "id", element: <PropertyView /> },
+                { path: "view/:id", element: <PropertyView /> },
                 { path: "edit/:id", element: <PropertyEdit /> },
               ],
             },
@@ -54,6 +59,7 @@ function App() {
             { path: "profile", element: <Profile /> },
           ],
         },
+        { path: "*", element: <div>404 Not Found</div> }
       ],
     },
   ]);

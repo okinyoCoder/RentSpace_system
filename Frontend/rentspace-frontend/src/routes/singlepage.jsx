@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import Slider from "../components/Slider";
 import {
@@ -13,18 +13,21 @@ import {
   FaMap,
   FaUserCircle,
 } from "react-icons/fa";
+import { AuthContext } from "../auth/AuthContext";
+import { propertyApi } from "../api/api"; // ✅ Using propertyApi now
 import "./singlepage.scss";
 
 function SinglePage() {
   const { id } = useParams();
   const [listing, setListing] = useState(null);
+  const { user } = useContext(AuthContext);
+  const [bookingStatus, setBookingStatus] = useState(null);
 
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        const res = await fetch(`/api/property/listings/${id}`);
-        const data = await res.json();
-        setListing(data);
+        const res = await propertyApi.get(`listings/${id}/`);
+        setListing(res.data);
       } catch (error) {
         console.error("Error fetching listing:", error);
       }
@@ -33,20 +36,49 @@ function SinglePage() {
     fetchListing();
   }, [id]);
 
+  const handleBookingRequest = async () => {
+    if (!user?.access) {
+      setBookingStatus("unauthorized");
+      return;
+    }
+
+    try {
+      setBookingStatus("loading");
+
+      await propertyApi.post(
+        `listings/${id}/book/`,
+        { message: "I'd like to book this property." },
+        {
+          headers: {
+            Authorization: `Bearer ${user.access}`, // 👈 attach manually
+          },
+        }
+      );
+
+      setBookingStatus("success");
+    } catch (err) {
+      console.error("Booking Error:", err);
+      setBookingStatus("error");
+    }
+  };
+
   if (!listing) return <div>Loading...</div>;
 
   return (
     <div className="singlePage">
       <div className="detail">
         <div className="wrapper">
-          <Slider images={listing.images?.map(img => img.image) || []} />
+          <Slider images={listing.images?.map((img) => img.image) || []} />
           <div className="info">
             <div className="top">
               <div className="post">
                 <h1>{listing.title}</h1>
                 <div className="address">
                   <FaMapMarkerAlt />
-                  <span>{listing.location?.county || 'Unknown Location'}, {listing.location?.town}, {listing.location?.estate}</span>
+                  <span>
+                    {listing.location?.county || "Unknown Location"},{" "}
+                    {listing.location?.town}, {listing.location?.estate}
+                  </span>
                 </div>
                 <div className="price">Ksh {listing.price}</div>
               </div>
@@ -62,6 +94,27 @@ function SinglePage() {
             <div className="bottom">
               {listing.description || "No description provided."}
             </div>
+
+            {user?.role === "tenant" && (
+              <div className="booking-button">
+                <button
+                  onClick={handleBookingRequest}
+                  disabled={bookingStatus === "loading"}
+                >
+                  {bookingStatus === "loading" ? "Sending..." : "Book Now"}
+                </button>
+
+                {bookingStatus === "success" && (
+                  <p className="success-msg">Booking request sent successfully!</p>
+                )}
+                {bookingStatus === "error" && (
+                  <p className="error-msg">Failed to send booking request. Try again.</p>
+                )}
+                {bookingStatus === "unauthorized" && (
+                  <p className="error-msg">Please log in to book a property.</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -109,11 +162,17 @@ function SinglePage() {
               </div>
               <div className="size">
                 <FaBath />
-                <span>{listing.bathrooms} bathroom{listing.bathrooms > 1 ? "s" : ""}</span>
+                <span>
+                  {listing.bathrooms} bathroom
+                  {listing.bathrooms > 1 ? "s" : ""}
+                </span>
               </div>
               <div className="size">
                 <FaBed />
-                <span>{listing.bedrooms} bed{listing.bedrooms > 1 ? "s" : ""}</span>
+                <span>
+                  {listing.bedrooms} bed
+                  {listing.bedrooms > 1 ? "s" : ""}
+                </span>
               </div>
             </div>
           </div>

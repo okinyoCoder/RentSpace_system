@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Card from '../components/Card';
 import Filter from '../components/Filter';
 import './listpage.scss';
-import { authApi } from '../api/axios';
+import { propertyApi } from '../api/api'; 
 
 function Listpage() {
     const [listings, setListings] = useState([]);
@@ -15,7 +15,7 @@ function Listpage() {
 
     const fetchListings = async () => {
         try {
-            const response = await authApi.get('/api/property/listings/', { params: { ...filters } });
+            const response = await propertyApi.get('listings/', { params: { ...filters } });
             setListings(response.data);
         } catch (err) {
             console.error('Failed to fetch listings:', err);

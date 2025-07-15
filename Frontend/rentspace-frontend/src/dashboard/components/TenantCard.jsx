@@ -1,6 +1,7 @@
 import "./tenantcard.scss";
 import { useState } from "react";
-import axios from "axios";
+import  {propertyApi}  from "../../api/Api";
+
 import {
   FaEnvelope,
   FaPhone,
@@ -23,14 +24,14 @@ export default function TenantCard({ tenant }) {
   const handleSendMessage = async () => {
     if (!message.trim()) return;
     try {
-      const response = await axios.post("/property/messages/", {
-        recipient_id: tenant.user_id, 
+      await propertyApi.post("messages/", {
+        recipient_id: tenant.user_id,
         message,
       });
       setMessageStatus("Message sent!");
       setMessage("");
     } catch (error) {
-      console.error("Failed to send message", error);
+      console.error("Failed to send message:", error);
       setMessageStatus("Failed to send message.");
     }
   };
@@ -39,8 +40,8 @@ export default function TenantCard({ tenant }) {
     <div className="tenantCard">
       <div className="cardWrapper">
         <div className="header">
-          <img src={tenant.image || "/assets/avatar.png"} alt={tenant.tenantName} />
-          <h2>{tenant.tenantName}</h2>
+          <img src={tenant.image || "/assets/avatar.png"} onError={(e) => e.target.src = "/assets/avatar.png"} />
+          <h2>{tenant.tenant?.full_name || "N/A"}</h2>
           <p className="location"><FaBuilding /> {tenant.propertyLocation}</p>
           {tenant.is_approved === false && (
             <p className="pending"><FaKey /> Approval Pending</p>
@@ -48,38 +49,14 @@ export default function TenantCard({ tenant }) {
         </div>
 
         <div className="section">
-          <div className="infoBox">
-            <label><FaEnvelope /> Email</label>
-            <p>{tenant.email}</p>
-          </div>
-          <div className="infoBox">
-            <label><FaPhone /> Phone</label>
-            <p>{tenant.phone}</p>
-          </div>
-          <div className="infoBox">
-            <label><FaHome /> Unit</label>
-            <p>{tenant.unit_number || "N/A"}</p>
-          </div>
-          <div className="infoBox">
-            <label><FaBuilding /> Property</label>
-            <p>{tenant.property_name}</p>
-          </div>
-          <div className="infoBox">
-            <label><FaCalendarCheck /> Move-in Date</label>
-            <p>{tenant.moveInDate}</p>
-          </div>
-          <div className="infoBox">
-            <label><FaUsers /> Occupants</label>
-            <p>{tenant.occupant}</p>
-          </div>
-          <div className="infoBox">
-            <label><FaMoneyBillWave /> Income</label>
-            <p>{tenant.income}</p>
-          </div>
-          <div className="infoBox">
-            <label><FaMoneyBillWave /> Rent</label>
-            <p>{tenant.rent}</p>
-          </div>
+          <Info label="Email" icon={<FaEnvelope />} value={tenant.email} />
+          <Info label="Phone" icon={<FaPhone />} value={tenant.phone} />
+          <Info label="Unit" icon={<FaHome />} value={tenant.unit_number || "N/A"} />
+          <Info label="Property" icon={<FaBuilding />} value={tenant.property_name} />
+          <Info label="Move-in Date" icon={<FaCalendarCheck />} value={tenant.moveInDate} />
+          <Info label="Occupants" icon={<FaUsers />} value={tenant.occupant} />
+          <Info label="Income" icon={<FaMoneyBillWave />} value={tenant.income} />
+          <Info label="Rent" icon={<FaMoneyBillWave />} value={tenant.rent} />
         </div>
 
         <div className="section messageSection">
@@ -93,6 +70,15 @@ export default function TenantCard({ tenant }) {
           {messageStatus && <p className="messageStatus">{messageStatus}</p>}
         </div>
       </div>
+    </div>
+  );
+}
+
+function Info({ label, icon, value }) {
+  return (
+    <div className="infoBox">
+      <label>{icon} {label}</label>
+      <p>{value}</p>
     </div>
   );
 }

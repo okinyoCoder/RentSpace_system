@@ -2,9 +2,10 @@ import './filter.scss';
 
 function Filter({ filters, setFilters }) {
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFilters((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: name === 'minPrice' || name === 'maxPrice' ? (value === '' ? '' : Number(value)) : value,
     }));
   };
 
@@ -20,7 +21,7 @@ function Filter({ filters, setFilters }) {
   return (
     <div className="filter">
       <h1>
-        Search results for <b>{filters.county || 'All locations'}</b>
+        Search results for <b>{filters.county || 'All Locations'}</b>
       </h1>
 
       <div className="top">
@@ -32,14 +33,14 @@ function Filter({ filters, setFilters }) {
             name="county"
             value={filters.county}
             onChange={handleChange}
-            placeholder="County Location"
+            placeholder="e.g. Nairobi"
           />
         </div>
       </div>
 
       <div className="bottom">
         <div className="item">
-          <label htmlFor="property">Property</label>
+          <label htmlFor="property">Property Type</label>
           <select
             name="property"
             id="property"
@@ -51,7 +52,7 @@ function Filter({ filters, setFilters }) {
             <option value="double_room">Double Room</option>
             <option value="bedsitter">Bedsitter</option>
             <option value="one_bedroom">One Bedroom</option>
-            <option value="two_bedroom">Two Bedrooms</option>
+            <option value="two_bedroom">Two Bedroom</option>
             <option value="bungalow">Bungalow</option>
           </select>
         </div>
@@ -64,7 +65,7 @@ function Filter({ filters, setFilters }) {
             name="minPrice"
             value={filters.minPrice}
             onChange={handleChange}
-            placeholder="Any"
+            placeholder="e.g. 5000"
           />
         </div>
 
@@ -76,7 +77,7 @@ function Filter({ filters, setFilters }) {
             name="maxPrice"
             value={filters.maxPrice}
             onChange={handleChange}
-            placeholder="Any"
+            placeholder="e.g. 20000"
           />
         </div>
       </div>

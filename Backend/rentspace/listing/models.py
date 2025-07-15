@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 import uuid
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 User = get_user_model()
 
 
 class Location(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     county = models.CharField(max_length=100)
     sub_county = models.CharField(max_length=100)
     ward = models.CharField(max_length=100)
@@ -41,7 +43,6 @@ class Listing(models.Model):
     property_type = models.CharField(max_length=20, choices=PROPERTY_CHOICES, default='bedsitter')
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True, related_name='listings')
     is_verified = models.BooleanField(default=False)
-    is_vacant = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     avg_rating = models.FloatField(default=0.0)
     review_count = models.PositiveIntegerField(default=0)
@@ -56,6 +57,7 @@ class Unit(models.Model):
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
     )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='units')
     unit_number = models.CharField(max_length=50)
     floor = models.IntegerField(default=1)
@@ -70,12 +72,14 @@ class Unit(models.Model):
         return f"{self.listing.title} - Unit {self.unit_number}"
 
 class ListingImage(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='images')
     property_image = models.ImageField(upload_to='property/images/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
 
 class Message(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
     recipient = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='messages')
@@ -112,7 +116,8 @@ class Review(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='reviews')
-    rating = models.IntegerField()
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = models.TextField(max_length=254, null=True, blank=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)

@@ -1,199 +1,179 @@
 import { useState } from "react";
-import "./createProperty.scss";
-import axios from "axios";
-import {
-    FaHome,
-    FaMapMarkerAlt,
-    FaBuilding,
-    FaImages,
-} from "react-icons/fa";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
+import Step1 from "./Step1PropertyInfo";
+import Step2 from "./Step2Location";
+import Step3 from "./Step3Unit";
+import Step4 from "./Step4Images";
+import StepProgress from "./StepProgress";
+import { ToastContainer, toast } from "react-toastify";
+import { propertyApi } from "../../api/Api";
+import "react-toastify/dist/ReactToastify.css";
+import "./CreateProperty.scss";
+
+const steps = [Step1, Step2, Step3, Step4];
+
+const validationSchemas = [
+  Yup.object({
+    title: Yup.string().required("Title is required"),
+    description: Yup.string().required("Description is required"),
+    property_type: Yup.string().required("Type is required"),
+  }),
+  Yup.object({
+    county: Yup.string().required("County is required"),
+    latitude: Yup.number().typeError("Latitude must be a number"),
+    longitude: Yup.number().typeError("Longitude must be a number"),
+  }),
+  Yup.object({
+    bedrooms: Yup.number().min(1).required(),
+    bathrooms: Yup.number().min(1).required(),
+    rent: Yup.number().min(0).required(),
+  }),
+  Yup.object({}),
+];
+
+const getInitialValues = () => ({
+  // Step 1
+  title: "",
+  description: "",
+  property_type: "bedsitter",
+  is_verified: false,
+
+  // Step 2
+  county: "",
+  sub_county: "",
+  ward: "",
+  street_address: "",
+  postal_code: "",
+  latitude: "",
+  longitude: "",
+
+  // Step 3
+  unit_number: "",
+  floor: 1,
+  bedrooms: 1,
+  bathrooms: 1,
+  rent: 0,
+  is_occupied: false,
+
+  // Step 4
+  images: [],
+});
 
 export default function CreatePropertyForm({ authToken }) {
-    const [step, setStep] = useState(1);
-    const [formData, setFormData] = useState({
-        // Step 1 - Listing
-        title: "",
-        description: "",
-        property_type: "bedsitter",
-        is_verified: false,
-        is_vacant: false,
+  const [step, setStep] = useState(0);
+  const StepComponent = steps[step];
 
-        // Step 2 - Location
-        county: "",
-        sub_county: "",
-        ward: "",
-        street_address: "",
-        postal_code: "",
-        latitude: "",
-        longitude: "",
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    try {
+      const locRes = await propertyApi.post(
+        "locations/",
+        {
+          county: values.county,
+          sub_county: values.sub_county,
+          ward: values.ward,
+          street_address: values.street_address,
+          postal_code: values.postal_code,
+          latitude: parseFloat(values.latitude) || null,
+          longitude: parseFloat(values.longitude) || null,
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      );
 
-        // Step 3 - Unit
-        unit_number: "",
-        floor: 1,
-        bedrooms: 1,
-        bathrooms: 1,
-        rent: 0.0,
-        is_occupied: false,
+      const listRes = await propertyApi.post(
+        "listings/",
+        {
+          title: values.title,
+          description: values.description,
+          property_type: values.property_type,
+          is_verified: values.is_verified,
+          location: locRes.data.id,
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      );
 
-        // Step 4 - Images
-        images: [],
-    });
-    const [listingId, setListingId] = useState(null);
-    const [imagePreviews, setImagePreviews] = useState([]);
+      const listingId = listRes.data.id;
 
-    const handleChange = (e) => {
-        const { name, value, type, checked, files } = e.target;
-        if (type === "checkbox") {
-            setFormData({ ...formData, [name]: checked });
-        } else if (type === "file") {
-            setFormData({ ...formData, images: Array.from(files) });
-            setImagePreviews(Array.from(files).map((file) => URL.createObjectURL(file)));
-        } else {
-            setFormData({ ...formData, [name]: value });
-        }
-    };
+      await propertyApi.post(
+        "units/",
+        {
+          listing: listingId,
+          unit_number: values.unit_number,
+          floor: values.floor,
+          bedrooms: values.bedrooms,
+          bathrooms: values.bathrooms,
+          rent: values.rent,
+          is_occupied: values.is_occupied,
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      );
 
-    const handleSubmit = async () => {
-        try {
-            // 1. Create Location
-            const locRes = await axios.post("/property/locations/", {
-                county: formData.county,
-                sub_county: formData.sub_county,
-                ward: formData.ward,
-                street_address: formData.street_address,
-                postal_code: formData.postal_code,
-                latitude: formData.latitude || null,
-                longitude: formData.longitude || null,
-            }, {
-                headers: { Authorization: `Bearer ${authToken}` },
-            });
+      for (const image of values.images) {
+        const formData = new FormData();
+        formData.append("property_image", image);
+        formData.append("listing", listingId);
+        await propertyApi.post("listing-images/", formData, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
 
-            // 2. Create Listing
-            const listRes = await axios.post("/property/listings/", {
-                title: formData.title,
-                description: formData.description,
-                property_type: formData.property_type,
-                is_verified: formData.is_verified,
-                is_vacant: formData.is_vacant,
-                location: locRes.data.id,
-            }, {
-                headers: { Authorization: `Bearer ${authToken}` },
-            });
-            const listingId = listRes.data.id;
-            setListingId(listingId);
+      toast.success("✅ Property created!");
+      resetForm();
+      setStep(0);
+    } catch (err) {
+      console.error(err);
+      toast.error("❌ Something went wrong");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-            // 3. Create Unit
-            await axios.post("/property/units/", {
-                listing: listingId,
-                unit_number: formData.unit_number,
-                floor: formData.floor,
-                bedrooms: formData.bedrooms,
-                bathrooms: formData.bathrooms,
-                rent: formData.rent,
-                is_occupied: formData.is_occupied,
-            }, {
-                headers: { Authorization: `Bearer ${authToken}` },
-            });
-
-            // 4. Upload Images
-            for (const image of formData.images) {
-                const imgData = new FormData();
-                imgData.append("property_image", image);
-                imgData.append("listing", listingId);
-
-                await axios.post("/property/listing-images/", imgData, {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                        "Content-Type": "multipart/form-data",
-                    },
-                });
-            }
-
-            alert("Property successfully created!");
-            setStep(1);
-            setFormData({ ...formData, images: [] });
-        } catch (err) {
-            console.error(err);
-            alert("Error creating property.");
-        }
-    };
-
-    const renderStep = () => {
-        switch (step) {
-            case 1:
-                return (
-                    <div className="container">
-                        <h2><FaHome /> Property Info</h2>
-                        <input name="title" value={formData.title} onChange={handleChange} placeholder="Title" />
-                        <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" />
-                        <select name="property_type" value={formData.property_type} onChange={handleChange}>
-                            <option value="bedsitter">Bedsitter</option>
-                            <option value="one_bedroom">1 Bedroom</option>
-                            <option value="two_bedroom">2 Bedroom</option>
-                            <option value="studio">Studio</option>
-                            <option value="mansion">Mansion</option>
-                            <option value="single_room">Single</option>
-                            <option value="double_room">Double Room</option>
-                            <option value="bungalow">Bungalow</option>
-                        </select>
-                        <label><input type="checkbox" name="is_vacant" checked={formData.is_vacant} onChange={handleChange} /> Vacant</label>
-                    </div>
-                );
-            case 2:
-                return (
-                    <div lassName="container" >
-                        <h2><FaMapMarkerAlt /> Location</h2>
-                        <input name="county" value={formData.county} onChange={handleChange} placeholder="County" />
-                        <input name="sub_county" value={formData.sub_county} onChange={handleChange} placeholder="Sub County" />
-                        <input name="ward" value={formData.ward} onChange={handleChange} placeholder="Ward" />
-                        <input name="street_address" value={formData.street_address} onChange={handleChange} placeholder="Street Address" />
-                        <input name="postal_code" value={formData.postal_code} onChange={handleChange} placeholder="Postal Code" />
-                        <input name="latitude" value={formData.latitude} onChange={handleChange} placeholder="Latitude" />
-                        <input name="longitude" value={formData.longitude} onChange={handleChange} placeholder="Longitude" />
-                    </div>
-                );
-            case 3:
-                return (
-                    <div>
-                        <h2><FaBuilding /> Unit</h2>
-                        <input name="unit_number" value={formData.unit_number} onChange={handleChange} placeholder="Unit Number" />
-                        <input type="number" name="floor" value={formData.floor} onChange={handleChange} placeholder="Floor" />
-                        <input type="number" name="bedrooms" value={formData.bedrooms} onChange={handleChange} placeholder="Bedrooms" />
-                        <input type="number" name="bathrooms" value={formData.bathrooms} onChange={handleChange} placeholder="Bathrooms" />
-                        <input type="number" name="rent" value={formData.rent} onChange={handleChange} placeholder="Rent" />
-                        <label><input type="checkbox" name="is_occupied" checked={formData.is_occupied} onChange={handleChange} /> Occupied</label>
-                    </div>
-                );
-            case 4:
-                return (
-                    <div className="container">
-                        <h2><FaImages /> Upload Images</h2>
-                        <input type="file" name="images" accept="image/*" multiple onChange={handleChange} />
-                        <div className="imagePreviewContainer">
-                            {imagePreviews.map((src, i) => (
-                                <img key={i} src={src} alt={`preview-${i}`} />
-                            ))}
-                        </div>
-                    </div>
-                );
-            default:
-                return null;
-        }
-    };
-
-    return (
-        <form
-            onSubmit={(e) => {
-                e.preventDefault();
-                if (step < 4) setStep((s) => s + 1);
-                else handleSubmit();
-            }}
-        >
-            {renderStep()}
-            <div className="btnContainer">
-                {step > 1 && <button type="button" onClick={() => setStep((s) => s - 1)}>Back</button>}
-                <button type="submit">{step < 4 ? "Next" : "Create Property"}</button>
+  return (
+    <>
+      <Formik
+        initialValues={getInitialValues()}
+        validationSchema={validationSchemas[step]}
+        onSubmit={(values, actions) => {
+          if (step < steps.length - 1) {
+            setStep(step + 1);
+            actions.setTouched({});
+            actions.setSubmitting(false);
+          } else {
+            handleSubmit(values, actions);
+          }
+        }}
+      >
+        {(formik) => (
+          <Form className="create-property-form">
+            <StepProgress currentStep={step} totalSteps={steps.length} />
+            <div className="form-step">
+              <StepComponent formik={formik} />
             </div>
-        </form>
-    );
+            <div className="form-buttons">
+              {step > 0 && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setStep(step - 1)}
+                >
+                  Back
+                </button>
+              )}
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={formik.isSubmitting}
+              >
+                {step < steps.length - 1 ? "Next" : "Create Property"}
+              </button>
+            </div>
+          </Form>
+        )}
+      </Formik>
+      <ToastContainer position="top-right" autoClose={3000} />
+    </>
+  );
 }

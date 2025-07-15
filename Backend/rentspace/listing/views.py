@@ -413,3 +413,23 @@ class TenantListView(APIView):
         tenants = User.objects.filter(user_type='tenant')
         serializer = UserSerializer(tenants, many=True)
         return Response(serializer.data)
+
+
+class LandlordDashboardSummaryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.user_type != 'landlord':
+            return Response({"detail": "Not authorized."}, status=403)
+
+        # Example summary data
+        listings = Listing.objects.filter(landlord=request.user)
+        total_properties = listings.count()
+        total_tenants = Unit.objects.filter(listing__in=listings, tenant__isnull=False).count()
+        pending_approval = Unit.objects.filter(listing__in=listings, tenant__isnull=False, is_occupied=False).count()
+
+        return Response({
+            "totalProperties": total_properties,
+            "totalTenants": total_tenants,
+            "pendingApproval": pending_approval
+        })

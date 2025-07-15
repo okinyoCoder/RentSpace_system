@@ -1,44 +1,41 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import axios from "axios";
+import { propertyApi } from "../../api/Api";
+
 import "./TenantTable.scss";
 
-function Tenant({ onSelectTenant }) {
+
+function TenantTable({ onSelectTenant }) {
   const [records, setRecords] = useState([]);
   const [filtered, setFiltered] = useState([]);
 
+  const fetchTenants = async () => {
+    try {
+      const response = await propertyApi.get("landlord/tenants/");
+      console.log("Tenants API response:", response.data);
+
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data?.results || [];
+
+      setRecords(data);
+      setFiltered(data);
+    } catch (error) {
+      console.error("Failed to fetch tenants", error);
+      setRecords([]);
+      setFiltered([]);
+    }
+  };
+
   useEffect(() => {
-    const fetchTenants = async () => {
-      try {
-        const response = await axios.get("/landlord/tenants/");
-        console.log("Tenants API response:", response.data); // 🕵️‍♀️ Log it
-
-        const data = Array.isArray(response.data)
-          ? response.data
-          : response.data?.results || []; // if paginated
-
-        setRecords(data);
-        setFiltered(data);
-      } catch (error) {
-        console.error("Failed to fetch tenants", error);
-        setRecords([]);
-        setFiltered([]);
-      }
-    };
-
     fetchTenants();
   }, []);
 
   const approveTenant = async (unitId) => {
     try {
-      await axios.post(`/property/landlord/tenants/approve/${unitId}/`);
+      await propertyApi.post(`landlord/tenants/approve/${unitId}/`);
       alert("Tenant approved successfully");
-
-      // Refresh data after approval
-      const response = await axios.get("/property/landlord/tenants/approve/${unitId}/");
-      const data = response.data;
-      setRecords(data);
-      setFiltered(data);
+      fetchTenants(); // Refresh data
     } catch (error) {
       console.error("Approval failed", error);
       alert("Approval failed");
@@ -48,24 +45,24 @@ function Tenant({ onSelectTenant }) {
   const columns = [
     {
       name: "Tenant Name",
-      selector: (row) => row.tenant?.full_name || "N/A",
+      selector: (row) => row?.tenant?.full_name || "N/A",
       sortable: true,
     },
     {
       name: "Property",
       cell: (row) => (
         <div className="propDetail">
-          {row.listing_image ? (
-            <img src={row.listing_image} alt="Property" />
-          ) : (<img src="/assets/house.png" alt="Default Property" />
-)}
+          <img
+            src={row.listing_image || "/assets/house.png"}
+            alt="Property"
+          />
           <span>{row.listing_title || "Untitled"}</span>
         </div>
       ),
     },
     {
       name: "Unit-No",
-      selector: (row) => row.unit_number || "N/A",
+      selector: (row) => row?.unit_number || "N/A",
       sortable: true,
     },
     {
@@ -79,10 +76,7 @@ function Tenant({ onSelectTenant }) {
         <div className="action">
           <button onClick={() => onSelectTenant(row)}>View Detail</button>
           {!row.is_occupied && (
-            <button
-              className="approveBtn"
-              onClick={() => approveTenant(row.id)}
-            >
+            <button className="approveBtn" onClick={() => approveTenant(row.id)}>
               Approve
             </button>
           )}
@@ -93,9 +87,21 @@ function Tenant({ onSelectTenant }) {
 
   const handleSearch = (event) => {
     const keyword = event.target.value.toLowerCase();
-    const result = records.filter((row) =>
-      row.tenant?.full_name?.toLowerCase().includes(keyword)
-    );
+
+    const result = records.filter((row) => {
+      const name = row.tenant?.full_name?.toLowerCase() || "";
+      const email = row.tenant?.email?.toLowerCase() || "";
+      const unit = row.unit_number?.toLowerCase() || "";
+      const property = row.property_name?.toLowerCase() || "";
+
+      return (
+        name.includes(keyword) ||
+        email.includes(keyword) ||
+        unit.includes(keyword) ||
+        property.includes(keyword)
+      );
+    });
+
     setFiltered(result);
   };
 
@@ -123,4 +129,4 @@ function Tenant({ onSelectTenant }) {
   );
 }
 
-export default Tenant;
+export default TenantTable

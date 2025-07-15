@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-
-import "./tenant.scss";
-import Tenant from "./components/Tenant";
+import  { useEffect, useState } from "react";
+import TenantTable from "./components/TenantTable";
 import TenantCard from "./components/TenantCard";
+import { propertyApi } from "../api/Api";
+import "./tenant.scss";
+
 import {
   FaBuilding,
   FaPeopleGroup,
@@ -23,7 +23,7 @@ export default function Tenants() {
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const response = await axios.get("/property/landlord/dashboard-summary");
+        const response = await propertyApi.get("/landlord/dashboard-summary");
         setSummary(response.data);
       } catch (err) {
         console.error("Failed to fetch summary", err);
@@ -56,7 +56,7 @@ export default function Tenants() {
           </div>
         </div>
 
-        <Tenant onSelectTenant={setSelectedTenant} />
+        <TenantTable onSelectTenant={setSelectedTenant} />
       </div>
 
       <div className="userProfile">

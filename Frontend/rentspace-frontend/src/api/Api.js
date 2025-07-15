@@ -1,9 +1,10 @@
+// api.js
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8000';
 
-const api = axios.create({
-  baseURL: `${BASE_URL}/api/`,
+const propertyApi = axios.create({
+  baseURL: `${BASE_URL}/api/property/`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -16,7 +17,7 @@ const authApi = axios.create({
   },
 });
 
-// Add access token to requests
+// Attach access token automatically
 authApi.interceptors.request.use(config => {
   try {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -30,38 +31,33 @@ authApi.interceptors.request.use(config => {
   return config;
 });
 
-// Refresh token on 401
+// Auto refresh token
 authApi.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
 
-    // Prevent infinite retry loop
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url.includes('/token/refresh/')
     ) {
       originalRequest._retry = true;
+
       try {
         const user = JSON.parse(localStorage.getItem('user'));
         const refreshToken = user?.refresh;
-
         if (!refreshToken) throw new Error('Refresh token missing');
 
-        // Refresh the token
-        const res = await api.post('token/refresh/', { refresh: refreshToken });
+        const res = await authApi.post('token/refresh/', { refresh: refreshToken });
         const newAccess = res.data.access;
 
-        // Save new access token
         const updatedUser = { ...user, access: newAccess };
         localStorage.setItem('user', JSON.stringify(updatedUser));
 
-        // Retry original request with new token
         originalRequest.headers.Authorization = `Bearer ${newAccess}`;
         return authApi(originalRequest);
       } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
         localStorage.removeItem('user');
         window.location.href = '/login';
         return Promise.reject(refreshError);
@@ -72,4 +68,4 @@ authApi.interceptors.response.use(
   }
 );
 
-export { api, authApi };
+export { propertyApi, authApi };

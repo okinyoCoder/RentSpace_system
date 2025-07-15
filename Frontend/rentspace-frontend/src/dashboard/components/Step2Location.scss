@@ -1,0 +1,39 @@
+.step-container {
+  padding: 2rem 1rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.step-title {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #2d6cdf;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 1rem;
+    background-color: #f9fafb;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      border-color: #2d6cdf;
+      background-color: #fff;
+      outline: none;
+    }
+  }
+
+  .error-message {
+    margin-top: 0.25rem;
+    color: #e53e3e;
+    font-size: 0.875rem;
+  }
+}
