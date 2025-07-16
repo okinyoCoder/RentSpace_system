@@ -32,6 +32,10 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
+    TENANT = 'tenant'
+    LANDLORD = 'landlord'
+    ADMIN = 'admin'
+
     USER_TYPE_CHOICES = (
         ('tenant', 'Tenant'),
         ('landlord', 'Landlord'),
@@ -45,7 +49,7 @@ class CustomUser(AbstractUser):
     last_name = models.CharField(max_length=50, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True) 
     profile_picture = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
-    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='tenant')
+    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='tenant', db_index=True)
     date_of_birth = models.DateField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
 
@@ -61,3 +65,15 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.user_type})"
+    
+    @property
+    def is_tenant(self):
+        return self.user_type == self.TENANT
+
+    @property
+    def is_landlord(self):
+        return self.user_type == self.LANDLORD
+
+    @property
+    def is_custom_admin(self):
+        return self.user_type == self.ADMIN

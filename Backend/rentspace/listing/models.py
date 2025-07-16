@@ -19,6 +19,7 @@ class Location(models.Model):
 
     class Meta:
         unique_together = ('county', 'sub_county', 'ward', 'street_address')
+        
 
     def __str__(self):
         return f"{self.ward}, {self.sub_county}, {self.county}"

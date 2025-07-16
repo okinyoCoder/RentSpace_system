@@ -15,7 +15,7 @@ class LocationSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'county', 'sub_county', 'ward',
             'street_address', 'postal_code',
-            'latitude', 'longitude', 'description', 'created_at'
+            'latitude', 'longitude', 'created_at'
         ]
         read_only_fields = ['id', 'created_at']
 
@@ -42,7 +42,7 @@ class ListingSerializer(serializers.ModelSerializer):
         model = Listing
         fields = [
             'id', 'landlord', 'title', 'description',
-              'property_type', 'location',
+            'property_type', 'location',
             'is_verified', 'avg_rating',
             'review_count', 'created_at'
         ]
@@ -52,10 +52,24 @@ class ListingSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
+        request = self.context.get("request")
+        landlord = request.user if request else None
         location_data = validated_data.pop('location', None)
+
         if location_data:
-            location, _ = Location.objects.get_or_create(**location_data)
+            unique_fields = {
+                "county": location_data.get("county"),
+                "sub_county": location_data.get("sub_county"),
+                "ward": location_data.get("ward"),
+                "street_address": location_data.get("street_address"),
+            }
+            location, _ = Location.objects.get_or_create(
+                **unique_fields,
+                defaults=location_data
+            )
             validated_data['location'] = location
+
+        validated_data["landlord"] = landlord
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
@@ -69,10 +83,18 @@ class ListingSerializer(serializers.ModelSerializer):
 
 
 class ListingImageSerializer(serializers.ModelSerializer):
+    property_image = serializers.SerializerMethodField()
+    
     class Meta:
         model = ListingImage
         fields = ['id', 'listing', 'property_image', 'uploaded_at']
         read_only_fields = ['id', 'uploaded_at']
+
+    def get_property_image(self, obj):
+        request = self.context.get('request')
+        if obj.property_image and hasattr(obj.property_image, 'url'):
+            return request.build_absolute_uri(obj.property_image.url)
+        return None
 
 
 class MessageSerializer(serializers.ModelSerializer):

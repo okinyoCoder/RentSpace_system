@@ -6,20 +6,28 @@ function Card({ listing }) {
   const {
     id,
     title = 'Untitled Property',
-    cover_image,
+    images = [],
     location = {},
-    price,
+    units = [],
     property_type = 'Unknown Type',
   } = listing;
 
-  const formattedLocation = [location.county, location.town, location.estate]
+  const coverImageSrc = listing.cover_image || images[0]?.property_image || '/placeholder.jpg';
+  const price = units[0]?.rent;
+
+  const formattedLocation = [
+    location.county,
+    location.sub_county,
+    location.ward,
+    location.street_address,
+  ]
     .filter(Boolean)
     .join(', ') || 'Unknown Location';
 
   return (
     <div className="card">
       <Link to={`/property/${id}`} className="card-image">
-        <img src={cover_image || '/placeholder.jpg'} alt={title} />
+        <img src={coverImageSrc} alt={title} />
       </Link>
       <div className="card-body">
         <h3 className="card-title">
@@ -34,7 +42,9 @@ function Card({ listing }) {
         </div>
         <div className="card-footer">
           <span className="property-type">{property_type.replace(/_/g, ' ')}</span>
-          <Link to={`/property/${id}`} className="view-btn">View</Link>
+          <Link to={`/property/${id}`} className="view-btn" onClick={() => console.log("navigating to", `/property/${id}`)}>
+            View
+          </Link>
         </div>
       </div>
     </div>

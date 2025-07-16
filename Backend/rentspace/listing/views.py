@@ -28,36 +28,29 @@ User = get_user_model()
 
 ####Begin proprty Listing###
 class ListingListCreateAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]   
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def get(self, request):
         listings = Listing.objects.select_related('location', 'landlord') \
                                   .prefetch_related('images', 'reviews', 'units') \
                                   .all()
 
-        # Filtering parameters from query string
+        # Filtering
         county = request.query_params.get('county')
         property_type = request.query_params.get('property')
         min_price = request.query_params.get('minPrice')
         max_price = request.query_params.get('maxPrice')
 
-        # Apply county filter (via related Location model)
         if county:
             listings = listings.filter(location__county__iexact=county)
-
-        # Apply property type filter
         if property_type:
             listings = listings.filter(property_type__iexact=property_type)
-
-        # Apply price filtering using related Unit model
         if min_price:
             listings = listings.filter(units__rent__gte=min_price)
-
         if max_price:
             listings = listings.filter(units__rent__lte=max_price)
 
-        # Remove duplicates due to join on units
         listings = listings.distinct()
-
         serializer = ListingDetailSerializer(listings, many=True, context={'request': request})
         return Response(serializer.data)
 
@@ -66,12 +59,13 @@ class ListingListCreateAPIView(APIView):
         if serializer.is_valid():
             serializer.save(landlord=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print("Validation Errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ListingDetailAPIView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
+    
     def get_object(self, pk):
         return get_object_or_404(Listing, pk=pk)
 
@@ -84,7 +78,8 @@ class ListingDetailAPIView(APIView):
         listing = self.get_object(pk)
         if listing.landlord != request.user:
             return Response({'detail': 'Not authorized.'}, status=status.HTTP_403_FORBIDDEN)
-        serializer = ListingSerializer(listing, data=request.data, context={'request': request})
+
+        serializer = ListingSerializer(listing, data=request.data, context={'request': request}, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -96,6 +91,7 @@ class ListingDetailAPIView(APIView):
             return Response({'detail': 'Not authorized.'}, status=status.HTTP_403_FORBIDDEN)
         listing.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
     
 ####Begin Image Listing####
 class ListingImageListCreateAPIView(APIView):
@@ -407,22 +403,22 @@ class UnitApprovalAPIView(APIView):
 class TenantListView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        # Only allow landlords to access this
-        if request.user.user_type != 'landlord':
+        if not request.user.is_landlord:
             return Response({"detail": "Not authorized."}, status=403)
-        tenants = User.objects.filter(user_type='tenant')
+
+        tenants = User.objects.filter(user_type=User.TENANT)
         serializer = UserSerializer(tenants, many=True)
         return Response(serializer.data)
+
 
 
 class LandlordDashboardSummaryView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        if request.user.user_type != 'landlord':
+        if not request.user.is_landlord:
             return Response({"detail": "Not authorized."}, status=403)
 
-        # Example summary data
         listings = Listing.objects.filter(landlord=request.user)
         total_properties = listings.count()
         total_tenants = Unit.objects.filter(listing__in=listings, tenant__isnull=False).count()

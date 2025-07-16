@@ -18,6 +18,9 @@ import CreateProperty from './dashboard/components/CreateProperty';
 import PropertyView from './dashboard/components/PropertyView';
 import PropertyEdit from './dashboard/components/PropertyEdit';
 import PrivateRoute from './components/PrivateRoute';
+import SuccessPage from './dashboard/components/SuccessPage';
+import ErrorPage from './dashboard/components/ErrorPage';
+
 
 function App() {
   const router = createBrowserRouter([
@@ -53,12 +56,15 @@ function App() {
                 { path: "add", element: <CreateProperty /> },
                 { path: "view/:id", element: <PropertyView /> },
                 { path: "edit/:id", element: <PropertyEdit /> },
+                { path: "success", element: <SuccessPage /> },
+                { path: "error", element: <ErrorPage /> },
               ],
             },
             { path: "tenant", element: <Tenants /> },
             { path: "profile", element: <Profile /> },
           ],
         },
+        { path: "not-found", element: <div>Property not found.</div> },
         { path: "*", element: <div>404 Not Found</div> }
       ],
     },

@@ -22,9 +22,10 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
+        const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [e.target.name]: e.target.value,
+            [name]: value,
         }));
     };
 
@@ -34,7 +35,6 @@ export default function Register() {
         setError(null);
 
         try {
-            // 1. Register user and receive tokens directly
             const res = await authApi.post('register/', formData);
             const { access, refresh, user: userData } = res.data;
 
@@ -55,7 +55,7 @@ export default function Register() {
             setUser(user);
             navigate(user.role === 'landlord' ? '/landlord' : '/');
         } catch (err) {
-            console.error("Registration Error:", err?.response?.data || err);
+            console.error('Registration Error:', err?.response?.data || err);
 
             if (err?.response?.data) {
                 const data = err.response.data;

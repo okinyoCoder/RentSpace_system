@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { FaPen, FaEye } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import { propertyApi } from "../../api/Api";
+import { propertyApi } from "../../api/Api"; // ✅ correct usage
 import "./table.scss";
 
 function PropertyTable() {
@@ -13,8 +13,10 @@ function PropertyTable() {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const res = await propertyApi.get("listings");
-        const data = Array.isArray(res.data) ? res.data : res.data?.results || [];
+        const res = await propertyApi.get("listings/");
+        const data = Array.isArray(res.data)
+          ? res.data
+          : res.data?.results || [];
         setRecords(data);
         setFiltered(data);
       } catch (error) {

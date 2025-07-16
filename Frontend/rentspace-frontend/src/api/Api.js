@@ -3,69 +3,70 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8000';
 
-const propertyApi = axios.create({
-  baseURL: `${BASE_URL}/api/property/`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// Create base Axios instance
+const createApi = (basePath) => {
+  const instance = axios.create({
+    baseURL: `${BASE_URL}${basePath}`,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
-const authApi = axios.create({
-  baseURL: `${BASE_URL}/api/account/`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Attach access token automatically
-authApi.interceptors.request.use(config => {
-  try {
+  // Attach token to requests
+  instance.interceptors.request.use((config) => {
     const user = JSON.parse(localStorage.getItem('user'));
-    const token = user?.access;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (user?.access) {
+      config.headers.Authorization = `Bearer ${user.access}`;
     }
-  } catch (err) {
-    console.error('JWT attach error:', err);
-  }
-  return config;
-});
+    return config;
+  });
 
-// Auto refresh token
-authApi.interceptors.response.use(
-  response => response,
-  async error => {
-    const originalRequest = error.config;
+  // Handle 401 errors and attempt token refresh
+  instance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
 
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url.includes('/token/refresh/')
-    ) {
-      originalRequest._retry = true;
+      const isUnauthorized =
+        error.response?.status === 401 &&
+        !originalRequest._retry &&
+        !originalRequest.url.includes('token/refresh');
 
-      try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        const refreshToken = user?.refresh;
-        if (!refreshToken) throw new Error('Refresh token missing');
+      if (isUnauthorized) {
+        originalRequest._retry = true;
 
-        const res = await authApi.post('token/refresh/', { refresh: refreshToken });
-        const newAccess = res.data.access;
+        try {
+          const user = JSON.parse(localStorage.getItem('user'));
+          const refreshToken = user?.refresh;
+          if (!refreshToken) throw new Error('Refresh token missing');
 
-        const updatedUser = { ...user, access: newAccess };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+          const tokenRes = await axios.post(`${BASE_URL}/api/account/token/refresh/`, {
+            refresh: refreshToken,
+          });
 
-        originalRequest.headers.Authorization = `Bearer ${newAccess}`;
-        return authApi(originalRequest);
-      } catch (refreshError) {
-        localStorage.removeItem('user');
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
+          const newAccess = tokenRes.data.access;
+          const updatedUser = { ...user, access: newAccess };
+
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+
+          // Update the original request with new access token
+          originalRequest.headers.Authorization = `Bearer ${newAccess}`;
+
+          return instance(originalRequest);
+        } catch (refreshErr) {
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+          return Promise.reject(refreshErr);
+        }
       }
+
+      return Promise.reject(error);
     }
+  );
 
-    return Promise.reject(error);
-  }
-);
+  return instance;
+};
 
-export { propertyApi, authApi };
+// Export specific API instances
+export const authApi = createApi('/api/account/');
+export const propertyApi = createApi('/api/property/');

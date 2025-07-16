@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import { authApi } from '../api/Api';
 import { AuthContext } from '../auth/AuthContext';
 import './Login.scss';
 import { FaUserPlus } from 'react-icons/fa6';
+import { authApi } from '../api/Api';
 
 export default function Login() {
   const { setUser } = useContext(AuthContext);
@@ -29,23 +29,27 @@ export default function Login() {
 
     try {
       const response = await authApi.post('login/', formData);
-      const { access, refresh } = response.data;
+      const { access, refresh, user: userData } = response.data;
 
       if (!access) throw new Error('No access token received');
 
       const decoded = jwtDecode(access);
+
+      // Construct user object with essential details
       const user = {
         access,
         refresh,
-        id: decoded.user_id,
-        email: decoded.email || formData.email,
-        role: decoded.role || response.data.user?.user_type || 'tenant',
+        id: userData?.id || decoded.user_id,
+        email: userData?.email || decoded.email || formData.email,
+        username: userData?.username || decoded.username || 'User',
+        role: userData?.user_type || decoded.role || 'tenant',
       };
 
       localStorage.setItem('user', JSON.stringify(user));
       setUser(user);
 
-      navigate(user.role === 'landlord' ? '/dashboard' : '/');
+      // Redirect based on role
+      navigate(user.role === 'landlord' ? '/landlord' : '/');
     } catch (err) {
       console.error('Login error:', err);
 

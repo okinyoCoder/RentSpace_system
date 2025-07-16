@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import Step1 from "./Step1PropertyInfo";
@@ -33,13 +34,10 @@ const validationSchemas = [
 ];
 
 const getInitialValues = () => ({
-  // Step 1
   title: "",
   description: "",
   property_type: "bedsitter",
   is_verified: false,
-
-  // Step 2
   county: "",
   sub_county: "",
   ward: "",
@@ -47,89 +45,72 @@ const getInitialValues = () => ({
   postal_code: "",
   latitude: "",
   longitude: "",
-
-  // Step 3
   unit_number: "",
   floor: 1,
   bedrooms: 1,
   bathrooms: 1,
   rent: 0,
   is_occupied: false,
-
-  // Step 4
   images: [],
 });
 
-export default function CreatePropertyForm({ authToken }) {
+export default function CreatePropertyForm() {
   const [step, setStep] = useState(0);
   const StepComponent = steps[step];
+  const navigate = useNavigate();
 
-  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
-    try {
-      const locRes = await propertyApi.post(
-        "locations/",
-        {
-          county: values.county,
-          sub_county: values.sub_county,
-          ward: values.ward,
-          street_address: values.street_address,
-          postal_code: values.postal_code,
-          latitude: parseFloat(values.latitude) || null,
-          longitude: parseFloat(values.longitude) || null,
-        },
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      );
-
-      const listRes = await propertyApi.post(
-        "listings/",
-        {
-          title: values.title,
-          description: values.description,
-          property_type: values.property_type,
-          is_verified: values.is_verified,
-          location: locRes.data.id,
-        },
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      );
-
-      const listingId = listRes.data.id;
-
-      await propertyApi.post(
-        "units/",
-        {
-          listing: listingId,
-          unit_number: values.unit_number,
-          floor: values.floor,
-          bedrooms: values.bedrooms,
-          bathrooms: values.bathrooms,
-          rent: values.rent,
-          is_occupied: values.is_occupied,
-        },
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      );
-
-      for (const image of values.images) {
-        const formData = new FormData();
-        formData.append("property_image", image);
-        formData.append("listing", listingId);
-        await propertyApi.post("listing-images/", formData, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+  try {
+    const listRes = await propertyApi.post("listings/", {
+      title: values.title,
+      description: values.description,
+      property_type: values.property_type,
+      is_verified: values.is_verified,
+      location: {
+        county: values.county,
+        sub_county: values.sub_county,
+        ward: values.ward,
+        street_address: values.street_address,
+        postal_code: values.postal_code,
+        latitude: parseFloat(values.latitude) || null,
+        longitude: parseFloat(values.longitude) || null,
       }
+    });
 
-      toast.success("✅ Property created!");
-      resetForm();
-      setStep(0);
-    } catch (err) {
-      console.error(err);
-      toast.error("❌ Something went wrong");
-    } finally {
-      setSubmitting(false);
+    const listingId = listRes.data.id;
+
+    await propertyApi.post("units/", {
+      listing: listingId,
+      unit_number: values.unit_number,
+      floor: values.floor,
+      bedrooms: values.bedrooms,
+      bathrooms: values.bathrooms,
+      rent: values.rent,
+      is_occupied: values.is_occupied,
+    });
+
+    for (const image of values.images) {
+      const formData = new FormData();
+      formData.append("property_image", image);
+      formData.append("listing", listingId);
+      await propertyApi.post("listing-images/", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
     }
-  };
+
+    toast.success("✅ Property created!");
+    resetForm();
+    setStep(0);
+    setTimeout(() => navigate("/landlord/property/success"), 1200);
+  } catch (err) {
+    console.error(err);
+    toast.error("❌ Something went wrong");
+    setTimeout(() => navigate("/landlord/property/error"), 1500);
+  } finally {
+    setSubmitting(false);
+  }
+};
+
 
   return (
     <>

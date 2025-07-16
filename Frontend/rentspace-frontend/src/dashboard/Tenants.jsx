@@ -23,7 +23,7 @@ export default function Tenants() {
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const response = await propertyApi.get("/landlord/dashboard-summary");
+        const response = await propertyApi.get("landlord/dashboard-summary");
         setSummary(response.data);
       } catch (err) {
         console.error("Failed to fetch summary", err);
