@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '../auth/AuthContext';
 import './Login.scss';
 import { FaUserPlus } from 'react-icons/fa6';
-import { authApi } from '../api/Api';
+import { authApi } from '../api/api';
 
 export default function Login() {
   const { setUser } = useContext(AuthContext);

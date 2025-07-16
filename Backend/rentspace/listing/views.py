@@ -71,7 +71,7 @@ class ListingDetailAPIView(APIView):
 
     def get(self, request, pk):
         listing = self.get_object(pk)
-        serializer = ListingDetailSerializer(listing, context={'request': request})
+        serializer = ListingDetailSerializer(listing, many=True, context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, pk):

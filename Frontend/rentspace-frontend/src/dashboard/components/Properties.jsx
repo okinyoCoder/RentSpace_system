@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { FaPen, FaEye } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import { propertyApi } from "../../api/Api"; // ✅ correct usage
+import { propertyApi } from "../../api/api";
 import "./table.scss";
 
 function PropertyTable() {
@@ -14,9 +14,7 @@ function PropertyTable() {
     const fetchListings = async () => {
       try {
         const res = await propertyApi.get("listings/");
-        const data = Array.isArray(res.data)
-          ? res.data
-          : res.data?.results || [];
+        const data = Array.isArray(res.data) ? res.data : res.data?.results || [];
         setRecords(data);
         setFiltered(data);
       } catch (error) {
@@ -28,7 +26,17 @@ function PropertyTable() {
 
     fetchListings();
   }, []);
-
+  const customStyles = {
+    headCells: {
+      style: {
+        fontSize: '14px',
+        fontWeight: '700',
+        color: '#333',
+        backgroundColor: '#f5f5f5',
+        textTransform: 'capitalize',
+      },
+    },
+  };
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
     const result = records.filter((row) =>
@@ -43,15 +51,20 @@ function PropertyTable() {
       cell: (row) => (
         <div className="propertyDetails">
           <img
-            src={row.images?.[0] || "/assets/house.png"}
+            src={row.images?.[0]?.property_image || "/assets/house.png"}
             alt={row.title || "Property"}
           />
           <div className="detail">
             <h4>{row.title || "Untitled"}</h4>
-            <p>{row.location || "Unknown location"}</p>
+            <p>
+              {row.location
+                ? `${row.location.street_address}, ${row.location.ward}, ${row.location.county}`
+                : "Unknown location"}
+            </p>
           </div>
         </div>
       ),
+      width: "320px",
     },
     {
       name: "Type",
@@ -59,18 +72,33 @@ function PropertyTable() {
       sortable: true,
     },
     {
-      name: "Status",
-      selector: (row) => row.status || "N/A",
+      name: "Verified",
+      selector: (row) => (row.is_verified ? "✅ Yes" : "❌ No"),
       sortable: true,
     },
     {
-      name: "Tenant Name",
+      name: "Approval",
       selector: (row) =>
-        row.tenant?.name || row.tenant?.full_name || "No tenant",
+        `${row.approved_units || 0}/${row.pending_units || 0} pending`,
+    },
+    {
+      name: "Occupancy",
+      selector: (row) =>
+        row.unit_count
+          ? `${row.occupied_count}/${row.unit_count} occupied`
+          : "N/A",
+      sortable: false,
+    },
+    {
+      name: "Rating",
+      selector: (row) =>
+        row.avg_rating
+          ? `${row.avg_rating.toFixed(1)} ★ (${row.review_count})`
+          : "No reviews",
       sortable: true,
     },
     {
-      name: "Action",
+      name: "Actions",
       cell: (row) => (
         <div className="action">
           <button onClick={() => navigate(`/landlord/property/edit/${row.id}`)}>
@@ -81,7 +109,8 @@ function PropertyTable() {
           </button>
         </div>
       ),
-    },
+      width: "160px",
+    }
   ];
 
   return (
@@ -104,6 +133,9 @@ function PropertyTable() {
         pagination
         selectableRows
         fixedHeader
+        highlightOnHover
+        responsive
+        customStyles={customStyles}
       />
     </div>
   );

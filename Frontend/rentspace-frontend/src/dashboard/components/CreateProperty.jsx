@@ -8,7 +8,7 @@ import Step3 from "./Step3Unit";
 import Step4 from "./Step4Images";
 import StepProgress from "./StepProgress";
 import { ToastContainer, toast } from "react-toastify";
-import { propertyApi } from "../../api/Api";
+import { propertyApi } from "../../api/api";
 import "react-toastify/dist/ReactToastify.css";
 import "./CreateProperty.scss";
 

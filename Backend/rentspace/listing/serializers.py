@@ -36,19 +36,23 @@ class ListingSerializer(serializers.ModelSerializer):
     landlord = UserSerializer(read_only=True)
     avg_rating = serializers.FloatField(read_only=True)
     review_count = serializers.IntegerField(read_only=True)
-    location = LocationSerializer()
-
+    unit_count = serializers.SerializerMethodField()
+    occupied_count = serializers.SerializerMethodField()
+    approved_units = serializers.SerializerMethodField()
+    pending_units = serializers.SerializerMethodField()
     class Meta:
         model = Listing
         fields = [
             'id', 'landlord', 'title', 'description',
             'property_type', 'location',
             'is_verified', 'avg_rating',
-            'review_count', 'created_at'
+            'review_count', 'created_at',
+            'unit_count', 'approved_units', 'pending_units', 'occupied_count',
+            
         ]
         read_only_fields = [
             'id', 'is_verified', 'avg_rating',
-            'review_count', 'created_at'
+            'review_count', 'created_at', 'unit_count', 'approved_units', 'pending_units', 'occupied_count',
         ]
 
     def create(self, validated_data):
@@ -81,6 +85,36 @@ class ListingSerializer(serializers.ModelSerializer):
             )
         return super().update(instance, validated_data)
 
+    def get_unit_count(self, obj):
+        return obj.units.count()
+
+    def get_approved_units(self, obj):
+        return obj.units.filter(is_occupied=True).count()
+
+    def get_pending_units(self, obj):
+        return obj.units.filter(is_occupied=False, tenant__isnull=False).count()
+
+    def get_occupied_count(self, obj):
+        return obj.units.filter(is_occupied=True).count()
+
+    def get_avg_rating(self, obj):
+        avg = obj.reviews.aggregate(avg=models.Avg('rating'))['avg']
+        return round(avg, 1) if avg is not None else None
+
+    def get_review_count(self, obj):
+        return obj.reviews.count()
+    
+    def get_unit_count(self, obj):
+        return obj.units.count()
+
+    def get_occupied_count(self, obj):
+        return obj.units.filter(is_occupied=True).count()
+
+    def get_approved_units(self, obj):
+        return obj.units.filter(status='approved').count()
+
+    def get_pending_units(self, obj):
+        return obj.units.filter(status='pending').count()
 
 class ListingImageSerializer(serializers.ModelSerializer):
     property_image = serializers.SerializerMethodField()
@@ -136,6 +170,7 @@ class ListingDetailSerializer(ListingSerializer):
     images = ListingImageSerializer(many=True, read_only=True)
     reviews = ReviewSerializer(many=True, read_only=True)
     units = UnitSerializer(many=True, read_only=True)
+    location = LocationSerializer(read_only=True)
 
     class Meta(ListingSerializer.Meta):
         fields = ListingSerializer.Meta.fields + ['images', 'reviews', 'units']

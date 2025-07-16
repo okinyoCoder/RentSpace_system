@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { propertyApi } from "../../api/Api";
+import { propertyApi } from "../../api/api";
 
 import "./TenantTable.scss";
 

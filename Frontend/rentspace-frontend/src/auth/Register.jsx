@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import { authApi } from '../api/Api';
+import { authApi } from '../api/api';
 import { AuthContext } from '../auth/AuthContext';
 import './Register.scss';
 

@@ -4,6 +4,7 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
     .top {
         display: flex;
@@ -29,12 +30,12 @@
     .propertyDetails {
         display: flex;
         align-items: center;
-        flex-direction: column;
+        flex-direction: row;
         gap: 3px;
 
         img {
-            width: 30px;
-            height: 30px;
+            width: 50px;
+            height: 50px;
             object-fit: cover;
             border-radius: 4px;
             margin-right: 10px;
@@ -42,7 +43,7 @@
         .detail {
             h4 {
                 margin: 0;
-                font-weight: 600;
+                font-weight: 700;
             }
 
             p {
